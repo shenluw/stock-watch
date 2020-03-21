@@ -1,0 +1,18 @@
+<idea-plugin>
+    <id>top.shenluw.intellij.stock-watch</id>
+    <name>stock-watch</name>
+    <vendor email="shenluw@gmail.com" url="https://shenluw.top">Shenluw</vendor>
+    <idea-version since-build="192"/>
+
+    <description><![CDATA[
+        Use the status bar to view stock quotes
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationInitializedListener implementation="top.shenluw.intellij.MyApplicationInitializedListener"/>
+    </extensions>
+
+
+</idea-plugin>

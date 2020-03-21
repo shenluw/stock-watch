@@ -1,0 +1,52 @@
+package top.shenluw.intellij
+
+import com.google.gson.GsonBuilder
+import com.intellij.ide.ApplicationInitializedListener
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationListener
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
+import com.intellij.openapi.application.ApplicationManager
+
+/**
+ * @author Shenluw
+ * created: 2020/3/21 17:58
+ */
+const val PLUGIN_ID = "StockWatch"
+
+inline val Application get() = ApplicationManager.getApplication()
+
+inline val Gson get() = GsonBuilder().create()
+
+inline fun notifyMsg(
+    title: String, msg: String,
+    type: NotificationType = NotificationType.INFORMATION,
+    listener: NotificationListener? = null
+) {
+    Notifications.Bus.notify(
+        Notification(PLUGIN_ID, title, msg, type, listener)
+    )
+}
+
+inline fun invokeLater(crossinline block: () -> Unit) {
+    if (Application.isDispatchThread) {
+        block.invoke()
+    } else {
+        Application.invokeLater { block.invoke() }
+    }
+}
+
+inline fun invokeLater(runnable: Runnable) {
+    if (Application.isDispatchThread) {
+        runnable.run()
+    } else {
+        Application.invokeLater(runnable)
+    }
+}
+
+
+class MyApplicationInitializedListener : ApplicationInitializedListener {
+    override fun componentsInitialized() {
+
+    }
+}

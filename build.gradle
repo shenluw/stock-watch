@@ -1,0 +1,53 @@
+import org.apache.tools.ant.filters.EscapeUnicode
+
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.16'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.70'
+}
+
+
+group = "top.shenluw.intellij"
+version = "0.1.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+}
+sourceCompatibility = 1.8
+
+intellij {
+    version  "2019.2.2"
+    pluginName  'stock-watch'
+}
+
+patchPluginXml {
+    sinceBuild 192
+    untilBuild null
+}
+
+publishPlugin{
+    token  intellijPublishToken
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ProcessResources) {
+    filesMatching('**/*.properties') {
+        filter EscapeUnicode
+    }
+}
