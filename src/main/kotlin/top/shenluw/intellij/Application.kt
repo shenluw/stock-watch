@@ -7,13 +7,14 @@ import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import top.shenluw.intellij.stockwatch.PLUGIN_ID
+import java.security.Security
 
 /**
  * @author Shenluw
  * created: 2020/3/21 17:58
  */
-const val PLUGIN_ID = "StockWatch"
-
 inline val Application get() = ApplicationManager.getApplication()
 
 inline val Gson get() = GsonBuilder().create()
@@ -47,6 +48,6 @@ inline fun invokeLater(runnable: Runnable) {
 
 class MyApplicationInitializedListener : ApplicationInitializedListener {
     override fun componentsInitialized() {
-
+        Security.addProvider(BouncyCastleProvider())
     }
 }

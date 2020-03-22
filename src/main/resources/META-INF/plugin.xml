@@ -2,7 +2,7 @@
     <id>top.shenluw.intellij.stock-watch</id>
     <name>stock-watch</name>
     <vendor email="shenluw@gmail.com" url="https://shenluw.top">Shenluw</vendor>
-    <idea-version since-build="192"/>
+    <idea-version since-build="193.1546" until-build="193.1546.*"/>
 
     <description><![CDATA[
         Use the status bar to view stock quotes
@@ -11,8 +11,14 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationInitializedListener implementation="top.shenluw.intellij.MyApplicationInitializedListener"/>
-    </extensions>
 
+        <applicationInitializedListener implementation="top.shenluw.intellij.MyApplicationInitializedListener"/>
+
+        <applicationService serviceImplementation="top.shenluw.intellij.stockwatch.Settings"/>
+        <applicationService serviceInterface="top.shenluw.intellij.stockwatch.QuotesService"
+                            serviceImplementation="top.shenluw.intellij.stockwatch.impl.QuotesServiceImpl"/>
+
+        <statusBarWidgetProvider implementation="top.shenluw.intellij.stockwatch.QuotesStatusBarWidgetProvider"/>
+    </extensions>
 
 </idea-plugin>
