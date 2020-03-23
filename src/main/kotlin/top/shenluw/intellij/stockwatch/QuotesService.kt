@@ -30,12 +30,18 @@ interface QuotesService {
      */
     fun updateSubscribe()
 
-    fun register(listener: QuotesListener)
-
-    fun unregister(listener: QuotesListener)
-
     interface QuotesListener {
+        /**
+         * 行情变化调用
+         */
         fun quoteChange(stockInfo: StockInfo)
+
+        /**
+         * 监听列表变化
+         * @param symbols 当前列表
+         */
+        fun symbolChange(symbols: List<String>)
+
     }
 
 }

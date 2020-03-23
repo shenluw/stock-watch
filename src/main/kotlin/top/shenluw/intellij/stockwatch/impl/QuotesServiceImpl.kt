@@ -1,8 +1,9 @@
 package top.shenluw.intellij.stockwatch.impl
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.util.Disposer
+import top.shenluw.intellij.Application
 import top.shenluw.intellij.stockwatch.QuotesService
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * @author Shenluw
@@ -12,10 +13,9 @@ class QuotesServiceImpl : QuotesService, Disposable {
     private var initialized = false
     private var disposed = false
 
-    private val listeners = CopyOnWriteArrayList<QuotesService.QuotesListener>()
-
     override fun init() {
         if (initialized) return
+        Disposer.register(Application, this)
     }
 
     override fun start() {
@@ -25,14 +25,6 @@ class QuotesServiceImpl : QuotesService, Disposable {
     }
 
     override fun updateSubscribe() {
-    }
-
-    override fun register(listener: QuotesService.QuotesListener) {
-        listeners.add(listener)
-    }
-
-    override fun unregister(listener: QuotesService.QuotesListener) {
-        listeners.remove(listener)
     }
 
     override fun dispose() {

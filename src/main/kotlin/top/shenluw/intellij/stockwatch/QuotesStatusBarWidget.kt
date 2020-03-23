@@ -5,6 +5,7 @@ import com.intellij.openapi.wm.CustomStatusBarWidget
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
+import com.intellij.util.messages.MessageBusConnection
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -19,6 +20,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     private val stocks = hashMapOf<String, JLabel>()
 
     private var nameStrategy: NameStrategy = FullNameStrategy.instance
+    private var msgConn: MessageBusConnection? = null
 
     override fun ID(): String {
         return "QuotesStatusBarWidget"
@@ -31,7 +33,13 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun install(statusBar: StatusBar) {
         QuotesService.instance.init()
-        QuotesService.instance.register(this)
+
+        val project = statusBar.project
+
+        msgConn = project?.messageBus?.connect()
+
+        msgConn?.subscribe(QuotesTopic, this)
+
         if (Settings.instance.enabled) {
             QuotesService.instance.start()
         }
@@ -64,6 +72,17 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         }
     }
 
+    override fun symbolChange(symbols: List<String>) {
+        val iterator = stocks.iterator()
+        while (iterator.hasNext()) {
+            val entry = iterator.next()
+            if (entry.key !in symbols) {
+                container?.remove(entry.value)
+                iterator.remove()
+            }
+        }
+    }
+
     private fun toString(stockInfo: StockInfo): String {
         val name = nameStrategy.transform(stockInfo.name)
         return "$name ${stockInfo.price}|$${stockInfo.percentage}"
@@ -71,7 +90,9 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun dispose() {
         stocks.clear()
-        QuotesService.instance.unregister(this)
+        msgConn?.disconnect()
+        msgConn = null
+        container = null
     }
 
 }

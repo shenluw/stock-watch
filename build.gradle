@@ -29,8 +29,6 @@ intellij {
 }
 
 patchPluginXml {
-    sinceBuild "193.1546"
-    untilBuild "193.1546.*"
 }
 
 publishPlugin{

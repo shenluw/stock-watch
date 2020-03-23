@@ -1,5 +1,7 @@
 package top.shenluw.intellij.stockwatch
 
+import com.intellij.util.messages.Topic
+
 /**
  * @author Shenluw
  * created: 2020/3/21 21:22
@@ -8,3 +10,5 @@ const val API_ADDRESS = "wss://openapi.itiger.com:8887/stomp"
 //val API_ADDRESS = "wss://openapi-sandbox.itiger.com:8889/stomp"
 
 const val PLUGIN_ID = "StockWatch"
+
+val QuotesTopic = Topic.create("Quotes", QuotesService.QuotesListener::class.java)
