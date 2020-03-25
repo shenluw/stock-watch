@@ -6,6 +6,8 @@ import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
+import top.shenluw.intellij.Application
+import java.text.DecimalFormat
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -34,9 +36,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     override fun install(statusBar: StatusBar) {
         QuotesService.instance.init()
 
-        val project = statusBar.project
-
-        msgConn = project?.messageBus?.connect()
+        msgConn = Application?.messageBus?.connect()
 
         msgConn?.subscribe(QuotesTopic, this)
 
@@ -52,6 +52,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         if (label == null) {
             label = JLabel(text)
             container?.add(label)
+            stocks[stockInfo.symbol] = label
         } else {
             label.text = text
         }
@@ -85,7 +86,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private fun toString(stockInfo: StockInfo): String {
         val name = nameStrategy.transform(stockInfo.name)
-        return "$name ${stockInfo.price}|$${stockInfo.percentage}"
+        return "[$name |${stockInfo.price}|${DecimalFormat("#.00").format(stockInfo.percentage?.times(100))}%]"
     }
 
     override fun dispose() {
