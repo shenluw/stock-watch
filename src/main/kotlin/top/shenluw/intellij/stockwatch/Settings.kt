@@ -6,6 +6,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.XCollection
 import java.awt.Color
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -41,6 +42,8 @@ class Settings : PersistentStateComponent<Settings> {
      */
     var fallColor: String = ColorUtil.toHex(Color.ORANGE)
 
+    var patternSetting: PatternSetting? = PatternSetting(true, 0, false)
+
     var symbolNameCache: String? = null
 
     override fun getState(): Settings? {
@@ -57,7 +60,21 @@ class Settings : PersistentStateComponent<Settings> {
     }
 }
 
-interface DataSourceSetting
+interface DataSourceSetting {
+    fun isValid(): Boolean
+}
 
 @Tag("tigerDataSource")
-data class TigerDataSourceSetting(val tigerId: String?, val privateKey: String?) : DataSourceSetting
+data class TigerDataSourceSetting(val tigerId: String?, val privateKey: String?) : DataSourceSetting, Serializable {
+    override fun isValid(): Boolean {
+        return !tigerId.isNullOrBlank() && !privateKey.isNullOrBlank()
+    }
+}
+
+/**
+ * @param fullName 是否使用全称显示
+ * @param namePrefix 取名称前N个字符显示
+ * @param useSymbol 使用股票代码显示
+ */
+@Tag("patternSetting")
+data class PatternSetting(val fullName: Boolean, var namePrefix: Int, var useSymbol: Boolean) : Serializable

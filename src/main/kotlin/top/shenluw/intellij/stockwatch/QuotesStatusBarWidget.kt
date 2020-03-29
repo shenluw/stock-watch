@@ -7,6 +7,7 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
 import top.shenluw.intellij.Application
+import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
 import java.text.DecimalFormat
 import java.util.*
@@ -23,7 +24,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     private var container: JPanel? = null
     private val stocks = hashMapOf<String, JLabel>()
 
-    private var nameStrategy: NameStrategy = FullNameStrategy.instance
+    private var nameStrategy: NameStrategy = FullNameStrategy(false)
     private var msgConn: MessageBusConnection? = null
 
     override fun ID(): String {
@@ -36,6 +37,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     override fun install(statusBar: StatusBar) {
+        CurrentProject = statusBar.project
+
         QuotesService.instance.init()
 
         msgConn = Application?.messageBus?.connect()
@@ -92,6 +95,17 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         container?.isVisible = enable
     }
 
+    override fun settingChange() {
+        val patternSetting = Settings.instance.patternSetting
+            ?: PatternSetting(true, 0, false)
+
+        if (patternSetting.fullName) {
+            nameStrategy = FullNameStrategy(patternSetting.useSymbol)
+        } else {
+            nameStrategy = PrefixNameStrategy(patternSetting.namePrefix)
+        }
+    }
+
     private val formatCache = object : ThreadLocal<DecimalFormat>() {
         override fun initialValue(): DecimalFormat {
             return DecimalFormat("0.00")
@@ -99,7 +113,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     private fun toString(stockInfo: StockInfo): String {
-        val name = nameStrategy.transform(stockInfo.name)
+        val name = nameStrategy.transform(stockInfo)
         return "[$name ${stockInfo.price}|${formatCache.get().format(stockInfo.percentage?.times(100))}%]"
     }
 

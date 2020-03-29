@@ -1,9 +1,12 @@
 package top.shenluw.intellij.stockwatch.impl
 
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import top.shenluw.intellij.Application
+import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
+import top.shenluw.intellij.stockwatch.client.TigerClientClient
 
 /**
  * @author Shenluw
@@ -13,7 +16,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
     private var initialized = false
     private var disposed = false
 
-    private var tigerClientService: TigerClientService? = null
+    private var dataSourceClient: DataSourceClient? = null
 
     @Synchronized
     override fun init() {
@@ -24,26 +27,31 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun start() {
-        if (tigerClientService == null) {
-            tigerClientService = TigerClientService()
-        }
+        val src = Settings.instance.dataSourceSetting ?: return
         val symbols = Settings.instance.symbols
-        val src = Settings.instance.dataSourceSetting
+
         if (src is TigerDataSourceSetting) {
-            tigerClientService?.start(src, symbols)
+            try {
+                getDataSourceClient(src)?.start(src, symbols)
+            } catch (e: Exception) {
+                notifyMsg("start error", e.message ?: "", NotificationType.ERROR)
+            }
+            Application.messageBus.syncPublisher(QuotesTopic).toggle(true)
+        } else {
+            notifyMsg("data source error", "not support data source setting", NotificationType.WARNING)
         }
-        Application.messageBus.syncPublisher(QuotesTopic).toggle(true)
     }
 
     @Synchronized
     override fun stop() {
-        tigerClientService?.close()
+        dataSourceClient?.close()
     }
 
     @Synchronized
     override fun updateSubscribe() {
         val symbols = Settings.instance.symbols
-        tigerClientService?.update(symbols)
+
+        dataSourceClient?.update(symbols)
         Application.messageBus.syncPublisher(QuotesTopic).symbolChange(symbols)
 
     }
@@ -54,9 +62,23 @@ class QuotesServiceImpl : QuotesService, Disposable {
         Application.messageBus.syncPublisher(QuotesTopic).toggle(false)
     }
 
+    @Synchronized
+    override fun getDataSourceClient(dataSourceSetting: DataSourceSetting): DataSourceClient? {
+        if (!dataSourceSetting.isValid()) {
+            return null
+        }
+        if (dataSourceSetting is TigerDataSourceSetting) {
+            if (dataSourceClient == null || dataSourceClient !is TigerClientClient) {
+                dataSourceClient = TigerClientClient()
+            }
+            return dataSourceClient
+        }
+        return null
+    }
+
     override fun dispose() {
         stop()
-        tigerClientService = null
+        dataSourceClient = null
         disposed = true
     }
 }

@@ -36,6 +36,8 @@ interface QuotesService {
      */
     fun updateSubscribe()
 
+    fun getDataSourceClient(dataSourceSetting: DataSourceSetting): DataSourceClient?
+
     interface QuotesListener {
         /**
          * 行情变化调用
@@ -53,6 +55,10 @@ interface QuotesService {
          */
         fun toggle(enable: Boolean)
 
+        /**
+         * 设置变化
+         */
+        fun settingChange()
     }
 
 }

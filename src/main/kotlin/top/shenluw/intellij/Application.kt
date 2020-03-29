@@ -1,12 +1,12 @@
 package top.shenluw.intellij
 
-import com.google.gson.GsonBuilder
 import com.intellij.ide.ApplicationInitializedListener
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.Project
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import top.shenluw.intellij.stockwatch.PLUGIN_ID
 import java.security.Security
@@ -17,7 +17,7 @@ import java.security.Security
  */
 inline val Application get() = ApplicationManager.getApplication()
 
-inline val Gson get() = GsonBuilder().create()
+var CurrentProject: Project? = null
 
 inline fun notifyMsg(
     title: String, msg: String,

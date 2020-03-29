@@ -5,24 +5,24 @@ package top.shenluw.intellij.stockwatch
  * created: 2020/3/22 21:34
  */
 interface NameStrategy {
-    fun transform(name: String?): String?
+    fun transform(info: StockInfo?): String?
 }
 
-class FullNameStrategy : NameStrategy {
+class FullNameStrategy(private val useSymbol: Boolean) : NameStrategy {
 
-    override fun transform(name: String?): String? {
-        return name
+    override fun transform(info: StockInfo?): String? {
+        if (useSymbol) {
+            return info?.symbol
+        }
+        return info?.name
     }
 
-    companion object {
-        val instance: NameStrategy
-            get() = FullNameStrategy()
-    }
 }
 
-class PrefixNameStrategy(val prefix: Int) : NameStrategy {
+class PrefixNameStrategy(private val prefix: Int) : NameStrategy {
 
-    override fun transform(name: String?): String? {
+    override fun transform(info: StockInfo?): String? {
+        val name = info?.name
         if (prefix > 0 && !name.isNullOrEmpty()) {
             if (name.length >= prefix) {
                 return name.substring(0, prefix)

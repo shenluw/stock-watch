@@ -1,10 +1,11 @@
-package top.shenluw.intellij.stockwatch
+package top.shenluw.intellij.stockwatch.client
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import com.jetbrains.rd.util.concurrentMapOf
 import com.tigerbrokers.stock.openapi.client.https.client.TigerHttpClient
 import com.tigerbrokers.stock.openapi.client.https.domain.quote.item.SymbolNameItem
+import com.tigerbrokers.stock.openapi.client.https.request.quote.QuoteMarketRequest
 import com.tigerbrokers.stock.openapi.client.https.request.quote.QuoteSymbolNameRequest
 import com.tigerbrokers.stock.openapi.client.socket.ApiAuthentication
 import com.tigerbrokers.stock.openapi.client.socket.ApiComposeCallback
@@ -13,20 +14,22 @@ import com.tigerbrokers.stock.openapi.client.struct.SubscribedSymbol
 import com.tigerbrokers.stock.openapi.client.struct.enums.Language
 import com.tigerbrokers.stock.openapi.client.struct.enums.Market
 import org.apache.commons.collections.CollectionUtils
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
+import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.compress
 import top.shenluw.intellij.stockwatch.utils.uncompress
 import top.shenluw.plugin.dubbo.utils.KLogger
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 
 /**
  * @author shenlw
  * @date 2020/3/23 18:02
  */
-class TigerClientService : ApiComposeCallback, KLogger {
+class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
 
     private companion object {
         @Volatile
@@ -43,19 +46,23 @@ class TigerClientService : ApiComposeCallback, KLogger {
 
     private var dataSourceSetting: TigerDataSourceSetting? = null
 
-    private var executor: ExecutorService? = null
-
     private var cache = concurrentMapOf<String, StockInfo>()
 
     @Synchronized
-    fun start(dataSourceSetting: TigerDataSourceSetting, symbols: SortedSet<String>) {
+    override fun start(dataSourceSetting: DataSourceSetting, symbols: SortedSet<String>) {
+        if (dataSourceSetting !is TigerDataSourceSetting) {
+            throw ClientException("not support data source")
+        }
+        if (!dataSourceSetting.isValid()) {
+            throw ClientException("setting error")
+        }
+
         val origin = this.symbols
         this.symbols = symbols
 
         this.dataSourceSetting = dataSourceSetting
 
         updateSymbolNames()
-        createExecutorIfNeed()
 
         if (socketClient == null) {
             val auth = ApiAuthentication.build(dataSourceSetting.tigerId, dataSourceSetting.privateKey)
@@ -75,16 +82,17 @@ class TigerClientService : ApiComposeCallback, KLogger {
     }
 
     @Synchronized
-    fun close() {
+    override fun close() {
         log.debug("close client")
         socketClient?.disconnect()
         socketClient = null
         cache.clear()
-        executor?.shutdown()
-        executor = null
     }
 
-    fun update(symbols: SortedSet<String>) {
+    override fun update(symbols: SortedSet<String>) {
+        if (CollectionUtils.isEqualCollection(this.symbols, symbols)) {
+            return
+        }
         if (!this.symbols.isNullOrEmpty() && socketClient?.isConnected == true) {
             socketClient?.cancelSubscribeQuote(this.symbols)
         }
@@ -92,6 +100,29 @@ class TigerClientService : ApiComposeCallback, KLogger {
         subscribeQuote(symbols)
     }
 
+    override fun testConfig(dataSourceSetting: DataSourceSetting): Promise<ClientResponse> {
+        if (!dataSourceSetting.isValid()) {
+            return resolvedPromise(ClientResponse(ResultCode.SETTING_ERROR, "setting error"))
+        }
+        if (dataSourceSetting !is TigerDataSourceSetting) {
+            return resolvedPromise(ClientResponse(ResultCode.NOT_SUPPORT_DATASOURCE, "not support data source"))
+        }
+
+
+        return runAsync {
+            val client = createApiClient(dataSourceSetting)
+            return@runAsync try {
+                val response = client.execute(QuoteMarketRequest.newRequest(Market.US))
+                if (response.isSuccess) {
+                    ClientResponse(ResultCode.SUCCESS)
+                } else {
+                    ClientResponse(ResultCode.CLIENT_ERROR, response.message)
+                }
+            } catch (e: Exception) {
+                ClientResponse(ResultCode.UNKNOWN, e.message)
+            }
+        }
+    }
 
     private fun subscribeQuote(symbols: SortedSet<String>) {
         if (socketClient?.isConnected == true) {
@@ -159,13 +190,6 @@ class TigerClientService : ApiComposeCallback, KLogger {
         return TigerHttpClient(HTTP_API_ADDRESS, setting.tigerId, setting.privateKey)
     }
 
-    @Synchronized
-    private fun createExecutorIfNeed() {
-        if (executor == null) {
-            executor = Executors.newSingleThreadExecutor()
-        }
-    }
-
     override fun orderStatusChange(jsonObject: JSONObject?) {
         log.debug("orderStatusChange: ", jsonObject)
     }
@@ -223,7 +247,7 @@ class TigerClientService : ApiComposeCallback, KLogger {
         if (item != null) {
             name = item.name
         } else {
-            executor?.execute {
+            runAsync {
                 updateSymbolNames(true)
             }
         }

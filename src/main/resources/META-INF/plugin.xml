@@ -19,6 +19,8 @@
                             serviceImplementation="top.shenluw.intellij.stockwatch.impl.QuotesServiceImpl"/>
 
         <statusBarWidgetProvider implementation="top.shenluw.intellij.stockwatch.QuotesStatusBarWidgetProvider"/>
+
+        <applicationConfigurable instance="top.shenluw.intellij.stockwatch.OptionsConfigurable"/>
     </extensions>
 
     <actions>
