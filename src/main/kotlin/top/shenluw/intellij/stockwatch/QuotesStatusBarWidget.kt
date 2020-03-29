@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
+import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
@@ -46,7 +47,9 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         msgConn?.subscribe(QuotesTopic, this)
 
         if (Settings.instance.enabled) {
-            QuotesService.instance.start()
+            runAsync {
+                QuotesService.instance.start()
+            }
         }
     }
 
