@@ -3,10 +3,7 @@ package top.shenluw.intellij.stockwatch.impl
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import top.shenluw.intellij.Application
-import top.shenluw.intellij.stockwatch.QuotesService
-import top.shenluw.intellij.stockwatch.Settings
-import top.shenluw.intellij.stockwatch.TigerClientService
-import top.shenluw.intellij.stockwatch.TigerDataSourceSetting
+import top.shenluw.intellij.stockwatch.*
 
 /**
  * @author Shenluw
@@ -35,6 +32,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
         if (src is TigerDataSourceSetting) {
             tigerClientService?.start(src, symbols)
         }
+        Application.messageBus.syncPublisher(QuotesTopic).toggle(true)
     }
 
     @Synchronized
@@ -42,9 +40,18 @@ class QuotesServiceImpl : QuotesService, Disposable {
         tigerClientService?.close()
     }
 
+    @Synchronized
     override fun updateSubscribe() {
         val symbols = Settings.instance.symbols
         tigerClientService?.update(symbols)
+        Application.messageBus.syncPublisher(QuotesTopic).symbolChange(symbols)
+
+    }
+
+    @Synchronized
+    override fun close() {
+        stop()
+        Application.messageBus.syncPublisher(QuotesTopic).toggle(false)
     }
 
     override fun dispose() {

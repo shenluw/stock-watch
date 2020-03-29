@@ -21,4 +21,11 @@
         <statusBarWidgetProvider implementation="top.shenluw.intellij.stockwatch.QuotesStatusBarWidgetProvider"/>
     </extensions>
 
+    <actions>
+        <action id="ToggleQuotesStatusBarAction"
+                class="top.shenluw.intellij.stockwatch.action.ToggleQuotesStatusBarAction"
+                text="Toggle Quotes StatusBar">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt Z"/>
+        </action>
+    </actions>
 </idea-plugin>

@@ -1,6 +1,7 @@
 package top.shenluw.intellij.stockwatch
 
 import com.intellij.openapi.components.ServiceManager
+import java.util.*
 
 /**
  * @author Shenluw
@@ -26,6 +27,11 @@ interface QuotesService {
     fun stop()
 
     /**
+     * 关闭插件功能
+     */
+    fun close();
+
+    /**
      * 更新订阅列表
      */
     fun updateSubscribe()
@@ -40,7 +46,12 @@ interface QuotesService {
          * 监听列表变化
          * @param symbols 当前列表
          */
-        fun symbolChange(symbols: List<String>)
+        fun symbolChange(symbols: SortedSet<String>)
+
+        /**
+         * 是否开启插件功能
+         */
+        fun toggle(enable: Boolean)
 
     }
 

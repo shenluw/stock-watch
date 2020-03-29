@@ -8,6 +8,7 @@ import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
 import top.shenluw.intellij.Application
 import java.text.DecimalFormat
+import java.util.*
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -73,7 +74,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         }
     }
 
-    override fun symbolChange(symbols: List<String>) {
+    override fun symbolChange(symbols: SortedSet<String>) {
         val iterator = stocks.iterator()
         while (iterator.hasNext()) {
             val entry = iterator.next()
@@ -82,6 +83,10 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
                 iterator.remove()
             }
         }
+    }
+
+    override fun toggle(enable: Boolean) {
+        container?.isVisible = enable
     }
 
     private fun toString(stockInfo: StockInfo): String {

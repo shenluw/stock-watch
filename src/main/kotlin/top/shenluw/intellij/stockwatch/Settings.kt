@@ -4,6 +4,7 @@ import com.intellij.openapi.components.*
 import com.intellij.ui.ColorUtil
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Tag
+import com.intellij.util.xmlb.annotations.XCollection
 import java.awt.Color
 import java.util.*
 
@@ -17,7 +18,8 @@ class Settings : PersistentStateComponent<Settings> {
     /**
      * 股票代码
      */
-    var symbols = TreeSet<String>()
+    @XCollection
+    var symbols: SortedSet<String> = sortedSetOf()
 
     /**
      * 股票数据源
