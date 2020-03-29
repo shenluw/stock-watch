@@ -3,7 +3,9 @@ package top.shenluw.intellij.stockwatch
 import com.intellij.openapi.components.*
 import com.intellij.ui.ColorUtil
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Property
 import com.intellij.util.xmlb.annotations.Tag
+import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
 import java.awt.Color
 import java.io.Serializable
@@ -25,7 +27,7 @@ class Settings : PersistentStateComponent<Settings> {
     /**
      * 股票数据源
      */
-    var dataSourceSetting: DataSourceSetting? = null
+    var tigerDataSourceSetting: TigerDataSourceSetting? = null
 
     /**
      * 是否启动行情监控
@@ -42,13 +44,11 @@ class Settings : PersistentStateComponent<Settings> {
      */
     var fallColor: String = ColorUtil.toHex(Color.ORANGE)
 
-    var patternSetting: PatternSetting? = PatternSetting(true, 0, false)
+    var patternSetting: PatternSetting = PatternSetting()
 
     var symbolNameCache: String? = null
 
-    override fun getState(): Settings? {
-        return this
-    }
+    override fun getState(): Settings? = this
 
     override fun loadState(state: Settings) {
         XmlSerializerUtil.copyBean(state, this)
@@ -64,8 +64,16 @@ interface DataSourceSetting {
     fun isValid(): Boolean
 }
 
-@Tag("tigerDataSource")
-data class TigerDataSourceSetting(val tigerId: String?, val privateKey: String?) : DataSourceSetting, Serializable {
+@Tag("tiger-data-source-setting")
+data class TigerDataSourceSetting(
+    @Property
+    val tigerId: String? = null,
+    @Property
+    val privateKey: String? = null
+) : DataSourceSetting,
+    Serializable {
+
+    @Transient
     override fun isValid(): Boolean {
         return !tigerId.isNullOrBlank() && !privateKey.isNullOrBlank()
     }
@@ -76,5 +84,13 @@ data class TigerDataSourceSetting(val tigerId: String?, val privateKey: String?)
  * @param namePrefix 取名称前N个字符显示
  * @param useSymbol 使用股票代码显示
  */
-@Tag("patternSetting")
-data class PatternSetting(val fullName: Boolean, var namePrefix: Int, var useSymbol: Boolean) : Serializable
+@Tag("pattern-setting")
+data class PatternSetting(
+    @Property
+    val fullName: Boolean = true,
+    @Property
+    var namePrefix: Int = 2,
+    @Property
+    var useSymbol: Boolean = false
+) :
+    Serializable

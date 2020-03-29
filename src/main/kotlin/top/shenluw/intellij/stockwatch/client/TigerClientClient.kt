@@ -13,6 +13,7 @@ import com.tigerbrokers.stock.openapi.client.socket.WebSocketClient
 import com.tigerbrokers.stock.openapi.client.struct.SubscribedSymbol
 import com.tigerbrokers.stock.openapi.client.struct.enums.Language
 import com.tigerbrokers.stock.openapi.client.struct.enums.Market
+import com.tigerbrokers.stock.openapi.client.util.ApiLogger
 import org.apache.commons.collections.CollectionUtils
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
@@ -37,6 +38,12 @@ class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
 
         @Volatile
         private var lastUpdateTimestamp: Long = 0L
+
+        init {
+            ApiLogger.setDebugEnabled(false)
+            ApiLogger.setInfoEnabled(false)
+            ApiLogger.setErrorEnabled(true)
+        }
     }
 
     @Volatile

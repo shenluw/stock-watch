@@ -97,7 +97,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun settingChange() {
         val patternSetting = Settings.instance.patternSetting
-            ?: PatternSetting(true, 0, false)
 
         if (patternSetting.fullName) {
             nameStrategy = FullNameStrategy(patternSetting.useSymbol)

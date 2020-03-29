@@ -11,6 +11,7 @@ import com.intellij.util.containers.isNullOrEmpty
 import com.intellij.util.ui.UIUtil
 import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.StringUtils
+import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.ui.SettingUI
@@ -106,11 +107,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         log.debug("reset")
 
         toggleCheckBox.isSelected = settings.enabled
-        val sourceSetting = settings.dataSourceSetting
-        if (sourceSetting is TigerDataSourceSetting) {
-            tigerIdTextField.text = sourceSetting.tigerId
-            privateKeyTextArea.text = sourceSetting.privateKey
-        }
+        val sourceSetting = settings.tigerDataSourceSetting
+        tigerIdTextField.text = sourceSetting?.tigerId
+        privateKeyTextArea.text = sourceSetting?.privateKey
         val sb = StringBuilder()
         val symbols: SortedSet<String> = settings.symbols
         if (!symbols.isNullOrEmpty()) {
@@ -124,7 +123,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
         symbolTextArea.text = sb.toString()
 
-        val patternSetting = settings.patternSetting ?: PatternSetting(true, 0, false)
+        val patternSetting = settings.patternSetting
         fullNameCheckBox.isSelected = patternSetting.fullName
         useSymbolCheckBox.isSelected = patternSetting.useSymbol
         prefixCountSpinner.value = patternSetting.namePrefix
@@ -135,7 +134,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         if (settings.enabled != toggleCheckBox.isSelected) {
             return true
         }
-        val dataSourceSetting = settings.dataSourceSetting ?: TigerDataSourceSetting(null, null)
+        val dataSourceSetting = settings.tigerDataSourceSetting ?: TigerDataSourceSetting()
         val setting = createDataSourceSetting()
         if (setting != dataSourceSetting) {
             return true
@@ -164,20 +163,21 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.enabled = toggleCheckBox.isSelected
         val text = symbolTextArea.text
         settings.symbols = transform(text)
-        settings.dataSourceSetting = createDataSourceSetting()
+        settings.tigerDataSourceSetting = createDataSourceSetting()
         settings.fallColor = fallColorBtn.text
         settings.riseColor = riseColorBtn.text
 
         settings.patternSetting = createPatternSetting()
 
         val quotesService = QuotesService.instance
-        if (settings.enabled) {
-            quotesService.start()
-        } else {
-            quotesService.close()
+        runAsync {
+            if (settings.enabled) {
+                quotesService.start()
+                quotesService.updateSubscribe()
+            } else {
+                quotesService.close()
+            }
         }
-
-        quotesService.updateSubscribe()
 
         Application.messageBus.syncPublisher(QuotesTopic).settingChange()
     }
@@ -187,7 +187,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         return root
     }
 
-    private fun createDataSourceSetting(): DataSourceSetting {
+    private fun createDataSourceSetting(): TigerDataSourceSetting {
         return TigerDataSourceSetting(
             StringUtils.trimToNull(tigerIdTextField.text),
             StringUtils.trimToNull(privateKeyTextArea.text)

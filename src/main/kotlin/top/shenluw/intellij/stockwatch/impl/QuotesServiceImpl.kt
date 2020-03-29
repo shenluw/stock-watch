@@ -27,19 +27,19 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun start() {
-        val src = Settings.instance.dataSourceSetting ?: return
+        val src = Settings.instance.tigerDataSourceSetting ?: return
+        if (!src.isValid()) {
+            return
+        }
         val symbols = Settings.instance.symbols
 
-        if (src is TigerDataSourceSetting) {
-            try {
-                getDataSourceClient(src)?.start(src, symbols)
-            } catch (e: Exception) {
-                notifyMsg("start error", e.message ?: "", NotificationType.ERROR)
-            }
-            Application.messageBus.syncPublisher(QuotesTopic).toggle(true)
-        } else {
-            notifyMsg("data source error", "not support data source setting", NotificationType.WARNING)
+        try {
+            getDataSourceClient(src)?.start(src, symbols)
+        } catch (e: Exception) {
+            notifyMsg("start error", e.message ?: "", NotificationType.ERROR)
         }
+        Application.messageBus.syncPublisher(QuotesTopic).toggle(true)
+
     }
 
     @Synchronized
