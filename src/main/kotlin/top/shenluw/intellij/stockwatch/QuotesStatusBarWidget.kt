@@ -7,6 +7,7 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
 import top.shenluw.intellij.Application
+import top.shenluw.intellij.stockwatch.utils.ColorUtil
 import java.text.DecimalFormat
 import java.util.*
 import javax.swing.JComponent
@@ -57,6 +58,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         } else {
             label.text = text
         }
+        label.toolTipText = toolTipText(stockInfo)
+
         var color: String? = null
         val percentage = stockInfo.percentage
         if (percentage != null) {
@@ -89,9 +92,38 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         container?.isVisible = enable
     }
 
+    private val formatCache = object : ThreadLocal<DecimalFormat>() {
+        override fun initialValue(): DecimalFormat {
+            return DecimalFormat("0.00")
+        }
+    }
+
     private fun toString(stockInfo: StockInfo): String {
         val name = nameStrategy.transform(stockInfo.name)
-        return "[$name |${stockInfo.price}|${DecimalFormat("#.00").format(stockInfo.percentage?.times(100))}%]"
+        return "[$name ${stockInfo.price}|${formatCache.get().format(stockInfo.percentage?.times(100))}%]"
+    }
+
+    private fun toolTipText(info: StockInfo): String {
+        return """
+            今开: ${info.openPrice} 昨收: ${info.preClose}          
+            最高: ${info.high} 最低: ${info.low}
+            现价: ${info.price} 成交量: ${formatVolume(info.volume)}            
+        """.trimIndent()
+    }
+
+    private fun formatVolume(value: Long?): String {
+        if (value == null) {
+            return "-"
+        }
+        if (value > 1000000) {
+            val v = value / 1000000
+            return formatCache.get().format(v) + "MM"
+        }
+        if (value > 1000) {
+            val v = value / 1000
+            return formatCache.get().format(v) + "K"
+        }
+        return value.toString()
     }
 
     override fun dispose() {

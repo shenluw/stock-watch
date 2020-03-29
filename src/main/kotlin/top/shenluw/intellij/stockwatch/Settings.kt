@@ -39,7 +39,9 @@ class Settings : PersistentStateComponent<Settings> {
     /**
      * 下跌颜色
      */
-    var fallColor: String = ColorUtil.toHex(Color.GREEN)
+    var fallColor: String = ColorUtil.toHex(Color.ORANGE)
+
+    var symbolNameCache: String? = null
 
     override fun getState(): Settings? {
         return this
@@ -58,4 +60,4 @@ class Settings : PersistentStateComponent<Settings> {
 interface DataSourceSetting
 
 @Tag("tigerDataSource")
-data class TigerDataSourceSetting(val tigerId: String, val privateKey: String) : DataSourceSetting
+data class TigerDataSourceSetting(val tigerId: String?, val privateKey: String?) : DataSourceSetting

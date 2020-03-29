@@ -1,4 +1,4 @@
-package top.shenluw.intellij.stockwatch
+package top.shenluw.intellij.stockwatch.utils
 
 import com.intellij.ui.ColorUtil
 import java.awt.Color
