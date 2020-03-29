@@ -6,6 +6,9 @@
 
     <description><![CDATA[
         Use the status bar to view stock quotes
+
+        <p> Alt + Z Quick toggle </p>
+
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
