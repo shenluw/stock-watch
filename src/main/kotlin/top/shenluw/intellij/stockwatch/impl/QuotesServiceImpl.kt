@@ -58,7 +58,9 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun close() {
-        stop()
+        if (!Settings.instance.onlyCloseUI) {
+            stop()
+        }
         Application.messageBus.syncPublisher(QuotesTopic).toggle(false)
     }
 

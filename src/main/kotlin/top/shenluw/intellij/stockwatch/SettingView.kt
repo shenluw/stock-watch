@@ -135,12 +135,17 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         useSymbolCheckBox.isSelected = patternSetting.useSymbol
         prefixCountSpinner.value = patternSetting.namePrefix
 
+        onlyCloseUICheckBox.isSelected = settings.onlyCloseUI
     }
 
     override fun isModified(settings: Settings): Boolean {
         if (settings.enabled != toggleCheckBox.isSelected) {
             return true
         }
+        if (settings.onlyCloseUI != onlyCloseUICheckBox.isSelected) {
+            return true
+        }
+
         val dataSourceSetting = settings.tigerDataSourceSetting ?: TigerDataSourceSetting()
         val setting = createDataSourceSetting()
         if (setting != dataSourceSetting) {
@@ -168,6 +173,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         log.debug("apply")
 
         settings.enabled = toggleCheckBox.isSelected
+        settings.onlyCloseUI = onlyCloseUICheckBox.isSelected
         val text = symbolTextArea.text
         settings.symbols = transform(text)
         settings.tigerDataSourceSetting = createDataSourceSetting()

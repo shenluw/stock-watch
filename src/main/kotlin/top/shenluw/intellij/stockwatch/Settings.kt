@@ -35,6 +35,11 @@ class Settings : PersistentStateComponent<Settings> {
     var enabled: Boolean = true
 
     /**
+     * 使用快捷键关闭时是否只隐藏UI显示
+     */
+    var onlyCloseUI: Boolean = true
+
+    /**
      * 上涨颜色
      */
     var riseColor: String = ColorUtil.toHex(Color.WHITE)

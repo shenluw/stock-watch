@@ -22,5 +22,6 @@ public class SettingUI {
     protected JCheckBox fullNameCheckBox;
     protected JCheckBox useSymbolCheckBox;
     protected JSpinner prefixCountSpinner;
+    protected JCheckBox onlyCloseUICheckBox;
 
 }
