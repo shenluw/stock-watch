@@ -41,6 +41,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     override fun install(statusBar: StatusBar) {
         CurrentProject = statusBar.project
 
+        nameStrategy = createNameStrategy()
+
         QuotesService.instance.init()
 
         msgConn = Application?.messageBus?.connect()
@@ -105,12 +107,27 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     override fun settingChange() {
-        val patternSetting = Settings.instance.patternSetting
+        val settings = Settings.instance
+        nameStrategy = createNameStrategy()
 
-        if (patternSetting.fullName) {
-            nameStrategy = FullNameStrategy(patternSetting.useSymbol)
+        symbolChange(settings.symbols)
+
+        settings.tigerDataSourceSetting?.let {
+            val client = QuotesService.instance.getDataSourceClient(it)
+            stocks.forEach { (symbol, _) ->
+                client?.getStockInfo(symbol)?.let { info ->
+                    quoteChange(info)
+                }
+            }
+        }
+    }
+
+    private fun createNameStrategy(): NameStrategy {
+        val patternSetting = Settings.instance.patternSetting
+        return if (patternSetting.fullName) {
+            FullNameStrategy(patternSetting.useSymbol)
         } else {
-            nameStrategy = PrefixNameStrategy(patternSetting.namePrefix)
+            PrefixNameStrategy(patternSetting.namePrefix)
         }
     }
 

@@ -109,6 +109,10 @@ class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
         subscribeQuote(symbols)
     }
 
+    override fun getStockInfo(symbol: String): StockInfo? {
+        return cache.getOrDefault(symbol, null)
+    }
+
     override fun testConfig(dataSourceSetting: DataSourceSetting): Promise<ClientResponse> {
         if (!dataSourceSetting.isValid()) {
             return resolvedPromise(ClientResponse(ResultCode.SETTING_ERROR, "setting error"))

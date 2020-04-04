@@ -16,6 +16,7 @@ interface DataSourceClient {
 
     fun testConfig(dataSourceSetting: DataSourceSetting): Promise<ClientResponse>
 
+    fun getStockInfo(symbol: String): StockInfo?
 }
 
 data class ClientResponse(val code: Int, val msg: String? = null) {
