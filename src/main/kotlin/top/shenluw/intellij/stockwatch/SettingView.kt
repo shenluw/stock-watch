@@ -203,7 +203,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
     private fun createDataSourceSetting(): TigerDataSourceSetting {
         return TigerDataSourceSetting(
             StringUtils.trimToNull(tigerIdTextField.text),
-            StringUtils.trimToNull(privateKeyTextArea.text)
+            transformPrivateKey(privateKeyTextArea.text)
         )
     }
 
@@ -232,6 +232,24 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         } catch (e: Exception) {
         }
         return set
+    }
+
+    private fun transformPrivateKey(text: String?): String? {
+        if (text.isNullOrBlank()) {
+            return null
+        }
+        var txt = text
+
+        val key = "KEY-----"
+        var index = txt.indexOf(key)
+        if (index >= 0) {
+            txt = txt.substring(index + key.length)
+        }
+        index = txt.indexOf("-----END")
+        if (index >= 0) {
+            txt = txt.substring(0, index)
+        }
+        return txt
     }
 
     /**
