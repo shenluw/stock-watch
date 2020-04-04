@@ -1,6 +1,5 @@
 package top.shenluw.intellij.stockwatch.ui;
 
-import com.intellij.ide.plugins.newui.ColorButton;
 import com.intellij.ui.HyperlinkLabel;
 
 import javax.swing.*;
@@ -17,8 +16,8 @@ public class SettingUI {
     protected JTextArea privateKeyTextArea;
     protected JTextArea symbolTextArea;
     protected HyperlinkLabel helpLinkLabel;
-    protected ColorButton riseColorBtn;
-    protected ColorButton fallColorBtn;
+    protected JButton riseColorBtn;
+    protected JButton fallColorBtn;
     protected JButton testConnectBtn;
     protected JCheckBox fullNameCheckBox;
     protected JCheckBox useSymbolCheckBox;

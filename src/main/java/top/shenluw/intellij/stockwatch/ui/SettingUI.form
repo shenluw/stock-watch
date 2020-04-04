@@ -87,9 +87,11 @@
               <text value="上涨颜色"/>
             </properties>
           </component>
-          <component id="c15b0" class="com.intellij.ide.plugins.newui.ColorButton" binding="riseColorBtn">
+          <component id="bb4be" class="javax.swing.JButton" binding="riseColorBtn">
             <constraints/>
-            <properties/>
+            <properties>
+              <text value="Button"/>
+            </properties>
           </component>
           <component id="386ca" class="javax.swing.JLabel">
             <constraints/>
@@ -97,9 +99,11 @@
               <text value="下跌颜色"/>
             </properties>
           </component>
-          <component id="c0227" class="com.intellij.ide.plugins.newui.ColorButton" binding="fallColorBtn">
+          <component id="d574c" class="javax.swing.JButton" binding="fallColorBtn">
             <constraints/>
-            <properties/>
+            <properties>
+              <text value="Button"/>
+            </properties>
           </component>
         </children>
       </grid>

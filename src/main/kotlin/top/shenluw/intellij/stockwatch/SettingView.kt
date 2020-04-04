@@ -1,6 +1,5 @@
 package top.shenluw.intellij.stockwatch
 
-import com.intellij.ide.plugins.newui.ColorButton
 import com.intellij.openapi.options.ConfigurableUi
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.ui.ClickListener
@@ -18,10 +17,12 @@ import top.shenluw.intellij.stockwatch.ui.SettingUI
 import top.shenluw.intellij.stockwatch.utils.ColorUtil.getColor
 import top.shenluw.plugin.dubbo.utils.KLogger
 import java.awt.Color
+import java.awt.event.ItemEvent
 import java.awt.event.MouseEvent
 import java.io.BufferedReader
 import java.io.StringReader
 import java.util.*
+import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.SpinnerNumberModel
@@ -101,6 +102,12 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
     private fun initPatternSetting() {
         prefixCountSpinner.model = SpinnerNumberModel(2, 0, 10, 1)
+
+        prefixCountSpinner.isEnabled = !fullNameCheckBox.isSelected
+        fullNameCheckBox.addItemListener {
+            prefixCountSpinner.isEnabled = it.stateChange != ItemEvent.SELECTED
+        }
+
     }
 
     override fun reset(settings: Settings) {
@@ -219,12 +226,12 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         return set
     }
 
-    private fun setColorButton(button: ColorButton, color: String) {
+    private fun setColorButton(button: JButton, color: String) {
         button.text = color
         button.background = getColor(color)
     }
 
-    private class ColorPickerHandler(private val colorButton: ColorButton) :
+    private class ColorPickerHandler(private val colorButton: JButton) :
         ClickListener(), ColorListener {
         override fun colorChanged(color: Color, source: Any) {
             colorButton.text = ColorUtil.toHex(color)
