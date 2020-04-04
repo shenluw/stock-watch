@@ -91,8 +91,10 @@ class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
     @Synchronized
     override fun close() {
         log.debug("close client")
+        socketClient?.cancelSubscribeQuote(this.symbols)
         socketClient?.disconnect()
         socketClient = null
+        this.symbols = null
         cache.clear()
     }
 

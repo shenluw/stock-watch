@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
+import com.intellij.util.text.DateFormatUtil
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
@@ -124,6 +125,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
             今开: ${info.openPrice} 昨收: ${info.preClose}          
             最高: ${info.high} 最低: ${info.low}
             现价: ${info.price} 成交量: ${formatVolume(info.volume)}            
+            ${info.timestamp?.let { DateFormatUtil.formatTimeWithSeconds(it) }}            
         """.trimIndent()
     }
 
