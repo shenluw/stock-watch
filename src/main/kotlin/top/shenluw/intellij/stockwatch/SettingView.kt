@@ -223,13 +223,22 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         try {
             BufferedReader(StringReader(text)).use { reader ->
                 var line: String
-                while (reader.readLine().also { line = it } != null) {
-                    set.add(line)
+                while (reader.readLine().also { line = it.trim() } != null) {
+                    if (!isIgnoreSymbol(line)) {
+                        set.add(line)
+                    }
                 }
             }
         } catch (e: Exception) {
         }
         return set
+    }
+
+    /**
+     * 以# 开头标识忽略这一行
+     */
+    private fun isIgnoreSymbol(symbol: String): Boolean {
+        return symbol.isBlank() || symbol[0] == '#'
     }
 
     private fun setColorButton(button: JButton, color: String) {

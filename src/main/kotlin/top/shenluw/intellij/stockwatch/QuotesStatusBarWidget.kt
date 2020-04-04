@@ -55,13 +55,18 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     override fun quoteChange(stockInfo: StockInfo) {
-        var label = stocks[stockInfo.symbol]
+        val symbol = stockInfo.symbol
+        if (symbol !in Settings.instance.symbols) {
+            return
+        }
+
+        var label = stocks[symbol]
 
         val text = toString(stockInfo)
         if (label == null) {
             label = JLabel(text)
             container?.add(label)
-            stocks[stockInfo.symbol] = label
+            stocks[symbol] = label
         } else {
             label.text = text
         }
