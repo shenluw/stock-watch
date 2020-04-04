@@ -278,8 +278,10 @@ class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
         )
 
         cache[symbol] = info
-
-        Application.messageBus.syncPublisher(QuotesTopic).quoteChange(info)
+        val application = Application
+        if (!application.isDisposed && !application.isDisposeInProgress) {
+            application.messageBus.syncPublisher(QuotesTopic).quoteChange(info)
+        }
     }
 
     override fun positionChange(jsonObject: JSONObject?) {
