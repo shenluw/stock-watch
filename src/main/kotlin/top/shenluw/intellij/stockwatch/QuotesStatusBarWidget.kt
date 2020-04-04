@@ -110,7 +110,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         val settings = Settings.instance
         nameStrategy = createNameStrategy()
 
-        symbolChange(settings.symbols)
+        symbolChange(settings.getRealSymbols())
 
         settings.tigerDataSourceSetting?.let {
             val client = QuotesService.instance.getDataSourceClient(it)

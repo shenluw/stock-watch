@@ -53,10 +53,22 @@ class Settings : PersistentStateComponent<Settings> {
 
     var symbolNameCache: String? = null
 
+    @Transient
+    fun getRealSymbols(): SortedSet<String> {
+        return symbols.filter { !isIgnoreSymbol(it) }.toSortedSet()
+    }
+
     override fun getState(): Settings? = this
 
     override fun loadState(state: Settings) {
         XmlSerializerUtil.copyBean(state, this)
+    }
+
+    /**
+     * 以# 开头标识忽略这一行
+     */
+    private fun isIgnoreSymbol(symbol: String): Boolean {
+        return symbol.isBlank() || symbol[0] == '#'
     }
 
     companion object {

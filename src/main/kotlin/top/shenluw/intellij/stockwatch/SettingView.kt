@@ -224,7 +224,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             BufferedReader(StringReader(text)).use { reader ->
                 var line: String
                 while (reader.readLine().also { line = it.trim() } != null) {
-                    if (!isIgnoreSymbol(line)) {
+                    if (!line.isBlank()) {
                         set.add(line)
                     }
                 }
@@ -250,13 +250,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             txt = txt.substring(0, index)
         }
         return txt
-    }
-
-    /**
-     * 以# 开头标识忽略这一行
-     */
-    private fun isIgnoreSymbol(symbol: String): Boolean {
-        return symbol.isBlank() || symbol[0] == '#'
     }
 
     private fun setColorButton(button: JButton, color: String) {

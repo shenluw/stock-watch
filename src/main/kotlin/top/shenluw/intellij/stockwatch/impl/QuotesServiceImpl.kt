@@ -31,7 +31,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
         if (!src.isValid()) {
             return
         }
-        val symbols = Settings.instance.symbols
+        val symbols = Settings.instance.getRealSymbols()
 
         try {
             getDataSourceClient(src)?.start(src, symbols)
@@ -49,7 +49,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun updateSubscribe() {
-        val symbols = Settings.instance.symbols
+        val symbols = Settings.instance.getRealSymbols()
 
         dataSourceClient?.update(symbols)
         Application.messageBus.syncPublisher(QuotesTopic).symbolChange(symbols)
