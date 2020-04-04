@@ -6,10 +6,24 @@
 
     <description><![CDATA[
         Use the status bar to view stock quotes
+        <ul>
+        <li>Symbol: <strong>#</strong> begins to indicate that this line does not take effect</li>
+        <li><strong>ALT + Z</strong>  Quick toggle</li>
 
-        <p> Alt + Z Quick toggle </p>
-
+        </ul>
+        <p>&nbsp;</p>
+        <h1>Preview</h1>
+        <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/settingview.jpg" alt="setting view"></p>
+        <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg" alt="status bar"></p>
     ]]></description>
+
+    <change-notes><![CDATA[
+      <ul>
+        <li>Fixed some bugs</li>
+        <li>Add a setting option</li>
+        <li>Add ignore feature</li>
+      </ul>
+    ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
 
