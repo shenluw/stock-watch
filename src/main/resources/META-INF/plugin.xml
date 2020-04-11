@@ -5,11 +5,18 @@
     <idea-version since-build="193.1546" until-build="193.1546.*"/>
 
     <description><![CDATA[
+        <p>
+            <a href='https://996.icu'><img src="https://img.shields.io/badge/link-996.icu-red.svg" referrerpolicy="no-referrer" alt="996.icu"></a>
+            <a href='https://github.com/996icu/996.ICU/blob/master/LICENSE'><img src="https://img.shields.io/badge/license-Anti%20996-blue.svg" referrerpolicy="no-referrer" alt="LICENSE"></a>
+        </p>
         Use the status bar to view stock quotes
         <ul>
         <li>Symbol: <strong>#</strong> begins to indicate that this line does not take effect</li>
         <li><strong>ALT + Z</strong>  Quick toggle</li>
-
+        <li>Sina stock code example:
+               <p>US: Add gb_ prefix</p>
+               <p>Hong Kong: Add hk_ prefix</p>
+        </li>
         </ul>
         <p>&nbsp;</p>
         <h1>Preview</h1>
@@ -19,10 +26,12 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Fixed some bugs</li>
-        <li>Add a setting option</li>
-        <li>Add ignore feature</li>
+        <li>Add Sina Data Poll</li>
+        <li>Add 996 license</li>
       </ul>
+      <p>
+        <a href='https://github.com/shenluw/stock-watch.git'>Github</a>
+      </P>
     ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
