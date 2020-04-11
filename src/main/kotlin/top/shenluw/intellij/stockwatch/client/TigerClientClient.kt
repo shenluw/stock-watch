@@ -2,6 +2,7 @@ package top.shenluw.intellij.stockwatch.client
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
+import com.intellij.notification.NotificationType
 import com.jetbrains.rd.util.concurrentMapOf
 import com.tigerbrokers.stock.openapi.client.https.client.TigerHttpClient
 import com.tigerbrokers.stock.openapi.client.https.domain.quote.item.SymbolNameItem
@@ -19,6 +20,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
+import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.compress
 import top.shenluw.intellij.stockwatch.utils.uncompress
@@ -213,6 +215,11 @@ class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
 
     override fun subscribeEnd(jsonObject: JSONObject?) {
         log.debug("subscribeEnd: ", jsonObject)
+
+        val msg = jsonObject?.getString("message")
+        if (!msg.isNullOrBlank()) {
+            notifyMsg("subscribe result", msg, NotificationType.WARNING)
+        }
     }
 
     override fun connectionClosed() {
@@ -305,6 +312,8 @@ class TigerClientClient : DataSourceClient, ApiComposeCallback, KLogger {
     }
 
     override fun getSubscribedSymbolEnd(subscribedSymbol: SubscribedSymbol?) {
-        log.debug("getSubscribedSymbolEnd: ", subscribedSymbol)
+        if (log.isDebugEnabled) {
+            log.debug("getSubscribedSymbolEnd: ", JSON.toJSON(subscribedSymbol))
+        }
     }
 }
