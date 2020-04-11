@@ -22,10 +22,9 @@ import java.awt.event.MouseEvent
 import java.io.BufferedReader
 import java.io.StringReader
 import java.util.*
-import javax.swing.JButton
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.SpinnerNumberModel
+import javax.swing.*
+import javax.swing.text.DefaultFormatterFactory
+import javax.swing.text.NumberFormatter
 
 /**
  * @author Shenluw
@@ -63,7 +62,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
                     return
                 }
 
-                val client = QuotesService.instance.getDataSourceClient(setting)
+                val client = QuotesService.instance.createDataSourceClient(setting)
                 if (client == null) {
                     builder.title("error")
                         .centerPanel(JLabel("not support client setting"))
@@ -98,6 +97,12 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }.installOn(testConnectBtn)
 
         initPatternSetting()
+
+        initPoll()
+
+        val group = ButtonGroup()
+        group.add(tigerRadioButton)
+        group.add(sinaRadioButton)
     }
 
     private fun initPatternSetting() {
@@ -107,7 +112,13 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         fullNameCheckBox.addItemListener {
             prefixCountSpinner.isEnabled = it.stateChange != ItemEvent.SELECTED
         }
+    }
 
+    private fun initPoll() {
+        pollCheckBox.addItemListener {
+            pollIntervalTextField.isEnabled = it.stateChange == ItemEvent.SELECTED
+        }
+        pollIntervalTextField.formatterFactory = DefaultFormatterFactory(NumberFormatter())
     }
 
     override fun reset(settings: Settings) {
@@ -139,6 +150,17 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         setColorButton(fallColorBtn, settings.fallColor)
         setColorButton(riseColorBtn, settings.riseColor)
+
+        val useDataSourceId = settings.useDataSourceId
+        pollCheckBox.isSelected = isPollDataSourceId(useDataSourceId)
+
+        pollIntervalTextField.value = settings.interval
+
+        if (useDataSourceId == SinaPollDataSourceSetting::class.simpleName) {
+            sinaRadioButton.isSelected = true
+        } else {
+            tigerRadioButton.isSelected = true
+        }
     }
 
     override fun isModified(settings: Settings): Boolean {
@@ -149,9 +171,36 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             return true
         }
 
-        val dataSourceSetting = settings.tigerDataSourceSetting ?: TigerDataSourceSetting()
-        val setting = createDataSourceSetting()
-        if (setting != dataSourceSetting) {
+        if (settings.interval != pollIntervalTextField.value as Long) {
+            return true
+        }
+        val useDataSourceId = settings.useDataSourceId
+        if (tigerRadioButton.isSelected) {
+            if (useDataSourceId == SinaPollDataSourceSetting::class.simpleName) {
+                return true
+            }
+        } else {
+            if (useDataSourceId != SinaPollDataSourceSetting::class.simpleName) {
+                return true
+            }
+        }
+        if (pollCheckBox.isSelected) {
+            if (useDataSourceId == TigerDataSourceSetting::class.simpleName) {
+                return true
+            }
+        } else {
+            if (useDataSourceId != TigerDataSourceSetting::class.simpleName) {
+                return true
+            }
+        }
+
+        if (createTigerDataSourceSetting() != settings.tigerDataSourceSetting ?: TigerDataSourceSetting()) {
+            return true
+        }
+        if (createTigerPollDataSourceSetting() != settings.tigerPollDataSourceSetting ?: TigerPollDataSourceSetting()) {
+            return true
+        }
+        if (createSinaPollDataSourceSetting() != settings.sinaPollDataSourceSetting ?: SinaPollDataSourceSetting()) {
             return true
         }
         if (fallColorBtn.text != settings.fallColor) {
@@ -179,7 +228,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.onlyCloseUI = onlyCloseUICheckBox.isSelected
         val text = symbolTextArea.text
         settings.symbols = transform(text)
-        settings.tigerDataSourceSetting = createDataSourceSetting()
+        settings.tigerDataSourceSetting = createTigerDataSourceSetting()
+        settings.tigerPollDataSourceSetting = createTigerPollDataSourceSetting()
+        settings.sinaPollDataSourceSetting = createSinaPollDataSourceSetting()
         settings.fallColor = fallColorBtn.text
         settings.riseColor = riseColorBtn.text
 
@@ -195,6 +246,17 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             }
         }
 
+        settings.interval = pollIntervalTextField.value as Long
+        if (pollCheckBox.isSelected) {
+            if (sinaRadioButton.isSelected) {
+                settings.useDataSourceId = SinaPollDataSourceSetting::class.simpleName
+            } else {
+                settings.useDataSourceId = TigerPollDataSourceSetting::class.simpleName
+            }
+        } else {
+            settings.useDataSourceId = TigerDataSourceSetting::class.simpleName
+        }
+
         Application.messageBus.syncPublisher(QuotesTopic).settingChange()
     }
 
@@ -203,11 +265,42 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         return root
     }
 
-    private fun createDataSourceSetting(): TigerDataSourceSetting {
+    private fun isPollDataSourceId(sourceId: String?): Boolean {
+        if (sourceId == TigerDataSourceSetting::class.simpleName) {
+            return false
+        }
+        return true
+    }
+
+    private fun createTigerDataSourceSetting(): TigerDataSourceSetting {
         return TigerDataSourceSetting(
             StringUtils.trimToNull(tigerIdTextField.text),
             transformPrivateKey(privateKeyTextArea.text)
         )
+    }
+
+    private fun createTigerPollDataSourceSetting(): TigerPollDataSourceSetting {
+        return TigerPollDataSourceSetting(
+            StringUtils.trimToNull(tigerIdTextField.text),
+            transformPrivateKey(privateKeyTextArea.text),
+            pollIntervalTextField.value as Long
+        )
+    }
+
+    private fun createSinaPollDataSourceSetting(): SinaPollDataSourceSetting {
+        return SinaPollDataSourceSetting(pollIntervalTextField.value as Long)
+    }
+
+    private fun createDataSourceSetting(): DataSourceSetting {
+        if (tigerRadioButton.isSelected) {
+            if (pollCheckBox.isSelected) {
+                return createTigerPollDataSourceSetting()
+            } else {
+                return createTigerDataSourceSetting()
+            }
+        } else {
+            return createSinaPollDataSourceSetting()
+        }
     }
 
     private fun createPatternSetting(): PatternSetting {

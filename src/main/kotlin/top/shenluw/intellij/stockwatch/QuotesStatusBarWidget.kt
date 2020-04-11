@@ -112,12 +112,10 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
         symbolChange(settings.getRealSymbols())
 
-        settings.tigerDataSourceSetting?.let {
-            val client = QuotesService.instance.getDataSourceClient(it)
-            stocks.forEach { (symbol, _) ->
-                client?.getStockInfo(symbol)?.let { info ->
-                    quoteChange(info)
-                }
+        val client = QuotesService.instance.getDataSourceClient()
+        stocks.forEach { (symbol, _) ->
+            client?.getStockInfo(symbol)?.let { info ->
+                quoteChange(info)
             }
         }
     }

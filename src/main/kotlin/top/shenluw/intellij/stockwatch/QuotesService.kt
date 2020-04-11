@@ -36,7 +36,12 @@ interface QuotesService {
      */
     fun updateSubscribe()
 
-    fun getDataSourceClient(dataSourceSetting: DataSourceSetting): DataSourceClient?
+    fun createDataSourceClient(dataSourceSetting: DataSourceSetting): DataSourceClient<DataSourceSetting>?
+
+    /**
+     * 获取当前使用的数据源client
+     */
+    fun getDataSourceClient(): DataSourceClient<DataSourceSetting>?
 
     interface QuotesListener {
         /**

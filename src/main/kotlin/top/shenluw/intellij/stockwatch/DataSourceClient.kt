@@ -7,14 +7,15 @@ import java.util.*
  * @author Shenluw
  * created: 2020/3/29 16:14
  */
-interface DataSourceClient {
-    fun start(dataSourceSetting: DataSourceSetting, symbols: SortedSet<String>)
+interface DataSourceClient<T : DataSourceSetting> {
+
+    fun start(dataSourceSetting: T, symbols: SortedSet<String>)
 
     fun update(symbols: SortedSet<String>)
 
     fun close()
 
-    fun testConfig(dataSourceSetting: DataSourceSetting): Promise<ClientResponse>
+    fun testConfig(dataSourceSetting: T): Promise<ClientResponse>
 
     fun getStockInfo(symbol: String): StockInfo?
 }

@@ -23,5 +23,9 @@ public class SettingUI {
     protected JCheckBox useSymbolCheckBox;
     protected JSpinner prefixCountSpinner;
     protected JCheckBox onlyCloseUICheckBox;
+    protected JCheckBox pollCheckBox;
+    protected JFormattedTextField pollIntervalTextField;
+    protected JRadioButton sinaRadioButton;
+    protected JRadioButton tigerRadioButton;
 
 }

@@ -3,10 +3,13 @@ package top.shenluw.intellij.stockwatch.impl
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
+import com.intellij.util.castSafelyTo
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
-import top.shenluw.intellij.stockwatch.client.TigerClientClient
+import top.shenluw.intellij.stockwatch.client.SinaClient
+import top.shenluw.intellij.stockwatch.client.TigerClient
+import top.shenluw.intellij.stockwatch.client.TigerPollClient
 
 /**
  * @author Shenluw
@@ -16,7 +19,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
     private var initialized = false
     private var disposed = false
 
-    private var dataSourceClient: DataSourceClient? = null
+    private var dataSourceClient: DataSourceClient<DataSourceSetting>? = null
 
     @Synchronized
     override fun init() {
@@ -27,14 +30,18 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun start() {
-        val src = Settings.instance.tigerDataSourceSetting ?: return
+        val src = getDataSourceSetting() ?: return
         if (!src.isValid()) {
             return
         }
         val symbols = Settings.instance.getRealSymbols()
 
         try {
-            getDataSourceClient(src)?.start(src, symbols)
+            if (dataSourceClient != null) {
+                dataSourceClient?.close()
+            }
+            dataSourceClient = createDataSourceClient(src)
+            dataSourceClient?.start(src, symbols)
         } catch (e: Exception) {
             notifyMsg("start error", e.message ?: "", NotificationType.ERROR)
         }
@@ -45,6 +52,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
     @Synchronized
     override fun stop() {
         dataSourceClient?.close()
+        dataSourceClient = null
     }
 
     @Synchronized
@@ -64,18 +72,40 @@ class QuotesServiceImpl : QuotesService, Disposable {
         Application.messageBus.syncPublisher(QuotesTopic).toggle(false)
     }
 
-    @Synchronized
-    override fun getDataSourceClient(dataSourceSetting: DataSourceSetting): DataSourceClient? {
+    private fun getDataSourceSetting(): DataSourceSetting? {
+        val sourceId = Settings.instance.useDataSourceId
+
+        if (sourceId == SinaPollDataSourceSetting::class.simpleName) {
+            return Settings.instance.sinaPollDataSourceSetting
+        }
+
+        if (sourceId == TigerDataSourceSetting::class.simpleName) {
+            return Settings.instance.tigerDataSourceSetting
+        }
+        if (sourceId == TigerPollDataSourceSetting::class.simpleName) {
+            return Settings.instance.tigerPollDataSourceSetting
+        }
+        return null
+    }
+
+    override fun createDataSourceClient(dataSourceSetting: DataSourceSetting): DataSourceClient<DataSourceSetting>? {
         if (!dataSourceSetting.isValid()) {
             return null
         }
         if (dataSourceSetting is TigerDataSourceSetting) {
-            if (dataSourceClient == null || dataSourceClient !is TigerClientClient) {
-                dataSourceClient = TigerClientClient()
-            }
-            return dataSourceClient
+            return TigerClient().castSafelyTo()
+        }
+        if (dataSourceSetting is SinaPollDataSourceSetting) {
+            return SinaClient().castSafelyTo()
+        }
+        if (dataSourceSetting is TigerPollDataSourceSetting) {
+            return TigerPollClient().castSafelyTo()
         }
         return null
+    }
+
+    override fun getDataSourceClient(): DataSourceClient<DataSourceSetting>? {
+        return dataSourceClient
     }
 
     override fun dispose() {

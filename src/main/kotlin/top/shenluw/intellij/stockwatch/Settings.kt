@@ -25,9 +25,25 @@ class Settings : PersistentStateComponent<Settings> {
     var symbols: SortedSet<String> = sortedSetOf()
 
     /**
-     * 股票数据源
+     * 老虎股票数据源
      */
     var tigerDataSourceSetting: TigerDataSourceSetting? = null
+    /**
+     * 老虎股票数据源
+     */
+    var tigerPollDataSourceSetting: TigerPollDataSourceSetting? = null
+    /**
+     * 新浪股票数据源
+     */
+    var sinaPollDataSourceSetting: SinaPollDataSourceSetting? = null
+    /**
+     * 当前选择使用的数据源
+     */
+    var useDataSourceId: String? = SinaPollDataSourceSetting::class.simpleName
+    /**
+     * 轮询间隔 单位毫秒
+     */
+    var interval = 10_000L
 
     /**
      * 是否启动行情监控
@@ -79,20 +95,55 @@ class Settings : PersistentStateComponent<Settings> {
 
 interface DataSourceSetting {
     fun isValid(): Boolean
+
+    val id: String
+        get() = this.javaClass.simpleName
+}
+
+interface ITigerDataSourceSetting : DataSourceSetting {
+    val tigerId: String?
+    val privateKey: String?
 }
 
 @Tag("tiger-data-source-setting")
 data class TigerDataSourceSetting(
     @Property
-    val tigerId: String? = null,
+    override val tigerId: String? = null,
     @Property
-    val privateKey: String? = null
-) : DataSourceSetting,
-    Serializable {
+    override val privateKey: String? = null
+) : ITigerDataSourceSetting {
 
     @Transient
     override fun isValid(): Boolean {
         return !tigerId.isNullOrBlank() && !privateKey.isNullOrBlank()
+    }
+}
+
+
+@Tag("tiger-poll-data-source-setting")
+data class TigerPollDataSourceSetting(
+    @Property
+    override val tigerId: String? = null,
+    @Property
+    override val privateKey: String? = null,
+    @Property
+    val interval: Long = 10_000L
+) : ITigerDataSourceSetting {
+
+    @Transient
+    override fun isValid(): Boolean {
+        return !tigerId.isNullOrBlank() && !privateKey.isNullOrBlank()
+    }
+}
+
+@Tag("sina-data-source-setting")
+data class SinaPollDataSourceSetting(
+    @Property
+    val interval: Long = 10_000L
+) : DataSourceSetting {
+
+    override fun isValid(): Boolean {
+        return true
     }
 }
 
