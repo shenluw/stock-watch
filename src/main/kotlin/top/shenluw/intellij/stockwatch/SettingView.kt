@@ -136,6 +136,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         prefixCountSpinner.value = patternSetting.namePrefix
 
         onlyCloseUICheckBox.isSelected = settings.onlyCloseUI
+
+        setColorButton(fallColorBtn, settings.fallColor)
+        setColorButton(riseColorBtn, settings.riseColor)
     }
 
     override fun isModified(settings: Settings): Boolean {
@@ -254,14 +257,14 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
     private fun setColorButton(button: JButton, color: String) {
         button.text = color
-        button.background = getColor(color)
+        button.putClientProperty("JButton.backgroundColor", getColor(color))
     }
 
     private class ColorPickerHandler(private val colorButton: JButton) :
         ClickListener(), ColorListener {
         override fun colorChanged(color: Color, source: Any) {
             colorButton.text = ColorUtil.toHex(color)
-            colorButton.background = color
+            colorButton.putClientProperty("JButton.backgroundColor", color)
         }
 
         override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
