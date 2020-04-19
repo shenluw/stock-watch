@@ -161,6 +161,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         } else {
             tigerRadioButton.isSelected = true
         }
+
+        preAndAfterTradingCheckBox.isSelected = settings.preAndAfterTrading
     }
 
     override fun isModified(settings: Settings): Boolean {
@@ -168,6 +170,10 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             return true
         }
         if (settings.onlyCloseUI != onlyCloseUICheckBox.isSelected) {
+            return true
+        }
+
+        if (settings.preAndAfterTrading != preAndAfterTradingCheckBox.isSelected) {
             return true
         }
 
@@ -256,6 +262,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         } else {
             settings.useDataSourceId = TigerDataSourceSetting::class.simpleName
         }
+
+        settings.preAndAfterTrading = preAndAfterTradingCheckBox.isSelected
 
         Application.messageBus.syncPublisher(QuotesTopic).settingChange()
     }

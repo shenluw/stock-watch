@@ -105,6 +105,9 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun toggle(enable: Boolean) {
         container?.isVisible = enable
+
+        container?.removeAll()
+        stocks.clear()
     }
 
     override fun settingChange() {

@@ -27,5 +27,6 @@ public class SettingUI {
     protected JFormattedTextField pollIntervalTextField;
     protected JRadioButton sinaRadioButton;
     protected JRadioButton tigerRadioButton;
+    protected JCheckBox preAndAfterTradingCheckBox;
 
 }
