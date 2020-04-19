@@ -131,9 +131,23 @@ class SinaClient : AbstractPollClient<SinaPollDataSourceSetting>() {
             val low = NumberUtils.toDouble(detail[7])
             val volume = NumberUtils.toLong(detail[10])
 
+            val preAfterPrice = NumberUtils.toDouble(detail[21])
+
             val timestamp = dateFormat.parse(detail[3]).time
 
-            return StockInfo(name, symbol, openPrice, preClose, price, high, low, volume, timestamp)
+            return StockInfo(
+                name,
+                symbol,
+                openPrice,
+                preClose,
+                price,
+                high,
+                low,
+                volume,
+                preAfterPrice,
+                preAfterPrice,
+                timestamp
+            )
         }
         return null
     }
@@ -156,7 +170,7 @@ class SinaClient : AbstractPollClient<SinaPollDataSourceSetting>() {
 
             val timestamp = dateFormatHK.parse(detail[18]).time
 
-            return StockInfo(name, symbol, openPrice, preClose, price, high, low, volume, timestamp)
+            return StockInfo(name, symbol, openPrice, preClose, price, high, low, volume, null, null, timestamp)
         }
         return null
     }
@@ -180,7 +194,7 @@ class SinaClient : AbstractPollClient<SinaPollDataSourceSetting>() {
             val volume = NumberUtils.toLong(detail[8])
             val timestamp = dateFormatA.parse(detail[31]).time
 
-            return StockInfo(name, symbol, openPrice, preClose, price, high, low, volume, timestamp)
+            return StockInfo(name, symbol, openPrice, preClose, price, high, low, volume, null, null, timestamp)
         }
         return null
     }

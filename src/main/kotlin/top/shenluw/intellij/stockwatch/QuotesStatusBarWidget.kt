@@ -11,6 +11,7 @@ import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
+import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.text.DecimalFormat
 import java.util.*
 import javax.swing.JComponent
@@ -137,7 +138,20 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private fun toString(stockInfo: StockInfo): String {
         val name = nameStrategy.transform(stockInfo)
-        return "[$name ${stockInfo.price}|${formatCache.get().format(stockInfo.percentage?.times(100))}%]"
+        var price = stockInfo.price
+        var percentage = stockInfo.percentage
+        val timestamp = stockInfo.timestamp
+        if (timestamp != null && Settings.instance.preAndAfterTrading) {
+            if (TradingUtil.isPreTimeRange(timestamp)) {
+                price = stockInfo.prePrice
+                percentage = stockInfo.prePercentage
+            }
+            if (TradingUtil.isAfterTimeRange(timestamp)) {
+                price = stockInfo.afterPrice
+                percentage = stockInfo.afterPercentage
+            }
+        }
+        return "[$name ${price}|${formatCache.get().format(percentage?.times(100))}%]"
     }
 
     private fun toolTipText(info: StockInfo): String {

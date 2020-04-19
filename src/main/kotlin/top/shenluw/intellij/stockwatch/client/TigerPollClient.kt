@@ -48,6 +48,7 @@ class TigerPollClient : AbstractPollClient<TigerPollDataSourceSetting>(), ITiger
                     it.high,
                     it.low,
                     it.volume,
+                    null, null,
                     it.latestTime
                 )
                 info

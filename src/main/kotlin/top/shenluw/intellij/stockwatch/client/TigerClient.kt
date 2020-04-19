@@ -173,6 +173,7 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
             jsonObject.getDouble("high"),
             jsonObject.getDouble("low"),
             jsonObject.getLong("volume"),
+            null, null,
             jsonObject.getLong("latestTimestamp")
         )
 

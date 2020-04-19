@@ -7,6 +7,7 @@ import top.shenluw.intellij.stockwatch.DataSourceClient
 import top.shenluw.intellij.stockwatch.DataSourceSetting
 import top.shenluw.intellij.stockwatch.QuotesTopic
 import top.shenluw.intellij.stockwatch.StockInfo
+import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -41,7 +42,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
 
         scheduledService.scheduleAtFixedRate({
             val application = Application
-            if (!application.isDisposed && !application.isDisposeInProgress) {
+            if (!application.isDisposed && !application.isDisposeInProgress && TradingUtil.isTradingDay()) {
                 val publisher = application.messageBus.syncPublisher(QuotesTopic)
                 fetch().forEach {
                     cache[it.symbol] = it

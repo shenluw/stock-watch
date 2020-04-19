@@ -28,18 +28,22 @@ class Settings : PersistentStateComponent<Settings> {
      * 老虎股票数据源
      */
     var tigerDataSourceSetting: TigerDataSourceSetting? = null
+
     /**
      * 老虎股票数据源
      */
     var tigerPollDataSourceSetting: TigerPollDataSourceSetting? = null
+
     /**
      * 新浪股票数据源
      */
     var sinaPollDataSourceSetting: SinaPollDataSourceSetting? = null
+
     /**
      * 当前选择使用的数据源
      */
     var useDataSourceId: String? = SinaPollDataSourceSetting::class.simpleName
+
     /**
      * 轮询间隔 单位毫秒
      */
@@ -64,6 +68,12 @@ class Settings : PersistentStateComponent<Settings> {
      * 下跌颜色
      */
     var fallColor: String = ColorUtil.toHex(Color.ORANGE)
+
+    /**
+     *  显示盘前盘后价格
+     */
+    var preAndAfterTrading: Boolean = true
+
 
     var patternSetting: PatternSetting = PatternSetting()
 
