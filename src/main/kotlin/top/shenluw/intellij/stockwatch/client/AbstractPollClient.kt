@@ -35,6 +35,8 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
 
     @Synchronized
     protected fun startPoll() {
+        stopScheduledService()
+
         val interval = max(100, this.interval)
 
         val scheduledService = Executors.newSingleThreadScheduledExecutor()
@@ -64,9 +66,16 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
     }
 
     override fun close() {
-        scheduledService?.shutdownNow()
-        scheduledService = null
+        stopScheduledService()
         cache.clear()
+    }
+
+    private fun stopScheduledService() {
+        val service = scheduledService
+        if (service != null && !service.isShutdown) {
+            service.shutdownNow()
+        }
+        scheduledService = null
     }
 
     override fun getStockInfo(symbol: String): StockInfo? {
