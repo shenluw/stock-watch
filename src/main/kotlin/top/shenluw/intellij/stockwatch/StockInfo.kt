@@ -43,7 +43,7 @@ data class StockInfo(
     /* 盘前涨跌幅 */
     val prePercentage: Double?
         get() {
-            val base = preClose
+            val base = price
             val price = prePrice
             if (price != null && base != null) {
                 return (price - base) / base
