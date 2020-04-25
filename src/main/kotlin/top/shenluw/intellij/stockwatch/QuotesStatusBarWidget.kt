@@ -76,7 +76,18 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         label.toolTipText = toolTipText(stockInfo)
 
         var color: String? = null
-        val percentage = stockInfo.percentage
+        var percentage: Double? = stockInfo.percentage
+
+        val timestamp = stockInfo.timestamp
+        if (timestamp != null && Settings.instance.preAndAfterTrading) {
+            if (TradingUtil.isPreTimeRange(timestamp)) {
+                percentage = stockInfo.prePercentage
+            }
+            if (TradingUtil.isAfterTimeRange(timestamp)) {
+                percentage = stockInfo.afterPercentage
+            }
+        }
+
         if (percentage != null) {
             if (percentage > 0) {
                 color = Settings.instance.riseColor
