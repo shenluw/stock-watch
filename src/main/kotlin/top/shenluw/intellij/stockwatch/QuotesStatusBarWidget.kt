@@ -50,6 +50,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
         msgConn?.subscribe(QuotesTopic, this)
 
+        container?.isVisible = Settings.instance.enabled
+
         if (Settings.instance.enabled) {
             runAsync {
                 QuotesService.instance.start()

@@ -22,6 +22,9 @@ class FullNameStrategy(private val useSymbol: Boolean) : NameStrategy {
 class PrefixNameStrategy(private val prefix: Int) : NameStrategy {
 
     override fun transform(info: StockInfo?): String? {
+        if (prefix == 0) {
+            return ""
+        }
         val name = info?.name
         if (prefix > 0 && !name.isNullOrEmpty()) {
             if (name.length >= prefix) {
