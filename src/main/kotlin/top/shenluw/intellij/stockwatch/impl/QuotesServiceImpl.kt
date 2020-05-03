@@ -8,7 +8,6 @@ import top.shenluw.intellij.Application
 import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.client.ScriptPollClient
-import top.shenluw.intellij.stockwatch.client.SinaClient
 import top.shenluw.intellij.stockwatch.client.TigerClient
 import top.shenluw.intellij.stockwatch.client.TigerPollClient
 
@@ -76,8 +75,8 @@ class QuotesServiceImpl : QuotesService, Disposable {
     private fun getDataSourceSetting(): DataSourceSetting? {
         val sourceId = Settings.instance.useDataSourceId
 
-        if (sourceId == SinaPollDataSourceSetting::class.simpleName) {
-            return Settings.instance.sinaPollDataSourceSetting
+        if (sourceId == ScriptPollDataSourceSetting::class.simpleName) {
+            return Settings.instance.scriptPollDataSourceSetting
         }
 
         if (sourceId == TigerDataSourceSetting::class.simpleName) {
@@ -95,9 +94,6 @@ class QuotesServiceImpl : QuotesService, Disposable {
         }
         if (dataSourceSetting is TigerDataSourceSetting) {
             return TigerClient().castSafelyTo()
-        }
-        if (dataSourceSetting is SinaPollDataSourceSetting) {
-            return SinaClient().castSafelyTo()
         }
         if (dataSourceSetting is TigerPollDataSourceSetting) {
             return TigerPollClient().castSafelyTo()

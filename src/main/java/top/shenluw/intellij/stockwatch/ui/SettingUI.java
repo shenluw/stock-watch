@@ -25,8 +25,11 @@ public class SettingUI {
     protected JCheckBox onlyCloseUICheckBox;
     protected JCheckBox pollCheckBox;
     protected JFormattedTextField pollIntervalTextField;
-    protected JRadioButton sinaRadioButton;
+    protected JRadioButton scriptRadioButton;
     protected JRadioButton tigerRadioButton;
     protected JCheckBox preAndAfterTradingCheckBox;
+    protected JButton addScriptButton;
+    protected JButton removeScriptButton;
+    protected JList<String> scriptList;
 
 }

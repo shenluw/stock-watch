@@ -40,12 +40,22 @@ class Settings : PersistentStateComponent<Settings> {
     /**
      * 新浪股票数据源
      */
-    var sinaPollDataSourceSetting: SinaPollDataSourceSetting? = null
+    var scriptPollDataSourceSetting: ScriptPollDataSourceSetting? = null
 
     /**
      * 当前选择使用的数据源
      */
-    var useDataSourceId: String? = SinaPollDataSourceSetting::class.simpleName
+    var useDataSourceId: String? = ScriptPollDataSourceSetting::class.simpleName
+
+    /**
+     * 最后一次选择脚本的目录
+     */
+    var lastScriptDir = ""
+
+    /**
+     * 是否开启脚本的日志输出
+     */
+    var enableScriptLog = false
 
     /**
      * 轮询间隔 单位毫秒
@@ -142,17 +152,6 @@ data class TigerPollDataSourceSetting(
     }
 }
 
-@Tag("sina-data-source-setting")
-data class SinaPollDataSourceSetting(
-    @Property
-    val interval: Long = 10_000L
-) : DataSourceSetting {
-
-    override fun isValid(): Boolean {
-        return true
-    }
-}
-
 @Tag("scrip-data-source-setting")
 data class ScriptPollDataSourceSetting(
     @Property
@@ -164,13 +163,12 @@ data class ScriptPollDataSourceSetting(
 ) : DataSourceSetting {
 
     override fun isValid(): Boolean {
-        if (paths.isNullOrEmpty()) {
-            return false
-        }
-        for (path in paths) {
-            val f = File(path)
-            if (!f.exists() || !f.isFile) {
-                return false
+        if (!paths.isNullOrEmpty()) {
+            for (path in paths) {
+                val f = File(path)
+                if (!f.exists() || !f.isFile) {
+                    return false
+                }
             }
         }
         return CollectionUtils.isSubCollection(actives ?: emptyList<String>(), paths)

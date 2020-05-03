@@ -176,7 +176,9 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
             val httpClient = HttpClients.createSystem()
 
             try {
-                fetchOne(engine, httpClient, symbols.toList())
+                if (fetchOne(engine, httpClient, symbols.toList()).isEmpty()) {
+                    return resolvedPromise(ClientResponse(ResultCode.SCRIPT_FAIL, "script return empty $it. "))
+                }
             } catch (e: Exception) {
                 log.error("script fail", e)
                 return resolvedPromise(ClientResponse(ResultCode.SCRIPT_FAIL, "script $it. ${e.message}"))

@@ -16,6 +16,7 @@ import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.ui.SettingUI
 import top.shenluw.intellij.stockwatch.utils.ColorUtil.getColor
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
+import top.shenluw.intellij.stockwatch.utils.UiUtil.getItems
 import top.shenluw.plugin.dubbo.utils.KLogger
 import java.awt.Color
 import java.awt.event.ItemEvent
@@ -24,6 +25,7 @@ import java.io.BufferedReader
 import java.io.StringReader
 import java.util.*
 import javax.swing.*
+import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.text.DefaultFormatterFactory
 import javax.swing.text.NumberFormatter
 
@@ -107,7 +109,50 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         val group = ButtonGroup()
         group.add(tigerRadioButton)
-        group.add(sinaRadioButton)
+        group.add(scriptRadioButton)
+
+        initScriptPane()
+    }
+
+    private val scriptFileScript =
+        FileNameExtensionFilter("script", "js", "ts", "groovy", "kt", "go", "py")
+
+    private fun initScriptPane() {
+        object : ClickListener() {
+            override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
+                val chooser = JFileChooser(Settings.instance.lastScriptDir)
+
+                chooser.fileSelectionMode = JFileChooser.FILES_ONLY
+                chooser.isMultiSelectionEnabled = true
+                chooser.fileFilter = scriptFileScript
+                chooser.showOpenDialog(root)
+
+                val selectedFile = chooser.selectedFile
+                if (selectedFile != null) {
+                    Settings.instance.lastScriptDir = selectedFile.parentFile.absolutePath
+                    val files = chooser.selectedFiles
+                    scriptList.setListData(files.map { it.absolutePath }.toTypedArray())
+                }
+                return true
+            }
+        }.installOn(addScriptButton)
+
+        object : ClickListener() {
+            override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
+                val selects = scriptList.selectedValuesList
+
+                val model = scriptList.model
+                val update = Vector<String>()
+                for (i in model.size - 1 downTo 0) {
+                    val item = model.getElementAt(i)
+                    if (item !in selects) {
+                        update.add(item.toString())
+                    }
+                }
+                scriptList.setListData(update)
+                return true
+            }
+        }.installOn(removeScriptButton)
     }
 
     private fun initPatternSetting() {
@@ -161,13 +206,17 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         pollIntervalTextField.value = settings.interval
 
-        if (useDataSourceId == SinaPollDataSourceSetting::class.simpleName) {
-            sinaRadioButton.isSelected = true
+        if (useDataSourceId == ScriptPollDataSourceSetting::class.simpleName) {
+            scriptRadioButton.isSelected = true
         } else {
             tigerRadioButton.isSelected = true
         }
 
         preAndAfterTradingCheckBox.isSelected = settings.preAndAfterTrading
+
+        settings.scriptPollDataSourceSetting?.paths?.apply {
+            scriptList.setListData(this.toTypedArray())
+        }
     }
 
     override fun isModified(settings: Settings): Boolean {
@@ -187,11 +236,11 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
         val useDataSourceId = settings.useDataSourceId
         if (tigerRadioButton.isSelected) {
-            if (useDataSourceId == SinaPollDataSourceSetting::class.simpleName) {
+            if (useDataSourceId == ScriptPollDataSourceSetting::class.simpleName) {
                 return true
             }
         } else {
-            if (useDataSourceId != SinaPollDataSourceSetting::class.simpleName) {
+            if (useDataSourceId != ScriptPollDataSourceSetting::class.simpleName) {
                 return true
             }
         }
@@ -211,7 +260,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         if (createTigerPollDataSourceSetting() != settings.tigerPollDataSourceSetting ?: TigerPollDataSourceSetting()) {
             return true
         }
-        if (createSinaPollDataSourceSetting() != settings.sinaPollDataSourceSetting ?: SinaPollDataSourceSetting()) {
+        if (createScriptPollDataSourceSetting() != settings.scriptPollDataSourceSetting ?: ScriptPollDataSourceSetting()) {
             return true
         }
         if (fallColorBtn.text != settings.fallColor) {
@@ -229,6 +278,16 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         if (!CollectionUtils.isEqualCollection(settings.symbols, transform(symbolTextArea.text))) {
             return true
         }
+
+        val saved = settings.scriptPollDataSourceSetting?.paths ?: emptyList()
+        val scriptModel = scriptList.model
+        if (saved.size != scriptModel.size) {
+            return true
+        }
+        val scripts = scriptList.getItems()
+        if (!CollectionUtils.isEqualCollection(saved, scripts)) {
+            return true
+        }
         return false
     }
 
@@ -241,7 +300,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.symbols = transform(text)
         settings.tigerDataSourceSetting = createTigerDataSourceSetting()
         settings.tigerPollDataSourceSetting = createTigerPollDataSourceSetting()
-        settings.sinaPollDataSourceSetting = createSinaPollDataSourceSetting()
+        settings.scriptPollDataSourceSetting = createScriptPollDataSourceSetting()
         settings.fallColor = fallColorBtn.text
         settings.riseColor = riseColorBtn.text
 
@@ -259,8 +318,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         settings.interval = pollIntervalTextField.value as Long
         if (pollCheckBox.isSelected) {
-            if (sinaRadioButton.isSelected) {
-                settings.useDataSourceId = SinaPollDataSourceSetting::class.simpleName
+            if (scriptRadioButton.isSelected) {
+                settings.useDataSourceId = ScriptPollDataSourceSetting::class.simpleName
             } else {
                 settings.useDataSourceId = TigerPollDataSourceSetting::class.simpleName
             }
@@ -300,8 +359,10 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         )
     }
 
-    private fun createSinaPollDataSourceSetting(): SinaPollDataSourceSetting {
-        return SinaPollDataSourceSetting(pollIntervalTextField.value as Long)
+    private fun createScriptPollDataSourceSetting(): ScriptPollDataSourceSetting {
+
+        val scriptList = scriptList.getItems()
+        return ScriptPollDataSourceSetting(pollIntervalTextField.value as Long, scriptList, scriptList)
     }
 
     private fun createDataSourceSetting(): DataSourceSetting {
@@ -312,7 +373,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
                 return createTigerDataSourceSetting()
             }
         } else {
-            return createSinaPollDataSourceSetting()
+            return createScriptPollDataSourceSetting()
         }
     }
 
