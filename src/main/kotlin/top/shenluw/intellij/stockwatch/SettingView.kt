@@ -15,6 +15,7 @@ import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.ui.SettingUI
 import top.shenluw.intellij.stockwatch.utils.ColorUtil.getColor
+import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import top.shenluw.plugin.dubbo.utils.KLogger
 import java.awt.Color
 import java.awt.event.ItemEvent
@@ -72,7 +73,11 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
                 testConnectBtn.isEnabled = false
 
-                client.testConfig(setting)
+                client.testConfig(
+                    setting,
+                    transform(symbolTextArea.text)
+                        .filter { !TradingUtil.isIgnoreSymbol(it) }.toSortedSet()
+                )
                     .onSuccess {
                         UIUtil.invokeAndWaitIfNeeded(Runnable {
                             testConnectBtn.isEnabled = true

@@ -74,7 +74,10 @@ class SinaClient : AbstractPollClient<SinaPollDataSourceSetting>() {
         HttpClients.createDefault()
     }
 
-    override fun testConfig(dataSourceSetting: SinaPollDataSourceSetting): Promise<ClientResponse> {
+    override fun testConfig(
+        dataSourceSetting: SinaPollDataSourceSetting,
+        sortedSet: SortedSet<String>
+    ): Promise<ClientResponse> {
         return resolvedPromise(ClientResponse(ResultCode.SUCCESS))
     }
 

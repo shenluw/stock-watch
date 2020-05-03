@@ -61,5 +61,13 @@ object TradingUtil {
     fun isDaylightSavings(): Boolean {
         return zoneId.rules.isDaylightSavings(Instant.now())
     }
+
+    /**
+     * 以# 开头标识忽略这一行
+     */
+    fun isIgnoreSymbol(symbol: String): Boolean {
+        return symbol.isBlank() || symbol[0] == '#'
+    }
+
 }
 

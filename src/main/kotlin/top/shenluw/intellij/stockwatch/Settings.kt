@@ -7,7 +7,10 @@ import com.intellij.util.xmlb.annotations.Property
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
+import org.apache.commons.collections.CollectionUtils
+import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.awt.Color
+import java.io.File
 import java.io.Serializable
 import java.util.*
 
@@ -81,20 +84,13 @@ class Settings : PersistentStateComponent<Settings> {
 
     @Transient
     fun getRealSymbols(): SortedSet<String> {
-        return symbols.filter { !isIgnoreSymbol(it) }.toSortedSet()
+        return symbols.filter { !TradingUtil.isIgnoreSymbol(it) }.toSortedSet()
     }
 
     override fun getState(): Settings? = this
 
     override fun loadState(state: Settings) {
         XmlSerializerUtil.copyBean(state, this)
-    }
-
-    /**
-     * 以# 开头标识忽略这一行
-     */
-    private fun isIgnoreSymbol(symbol: String): Boolean {
-        return symbol.isBlank() || symbol[0] == '#'
     }
 
     companion object {
@@ -154,6 +150,30 @@ data class SinaPollDataSourceSetting(
 
     override fun isValid(): Boolean {
         return true
+    }
+}
+
+@Tag("scrip-data-source-setting")
+data class ScriptPollDataSourceSetting(
+    @Property
+    val interval: Long = 10_000L,
+    @XCollection
+    val paths: List<String>? = null,
+    @XCollection
+    val actives: List<String>? = null
+) : DataSourceSetting {
+
+    override fun isValid(): Boolean {
+        if (paths.isNullOrEmpty()) {
+            return false
+        }
+        for (path in paths) {
+            val f = File(path)
+            if (!f.exists() || !f.isFile) {
+                return false
+            }
+        }
+        return CollectionUtils.isSubCollection(actives ?: emptyList<String>(), paths)
     }
 }
 

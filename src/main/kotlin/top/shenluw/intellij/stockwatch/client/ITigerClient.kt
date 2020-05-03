@@ -15,6 +15,7 @@ import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.compress
 import top.shenluw.intellij.stockwatch.utils.uncompress
 import top.shenluw.plugin.dubbo.utils.KLogger
+import java.util.*
 
 /**
  * @author Shenluw
@@ -35,7 +36,7 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
         }
     }
 
-    override fun testConfig(dataSourceSetting: T): Promise<ClientResponse> {
+    override fun testConfig(dataSourceSetting: T, symbols: SortedSet<String>): Promise<ClientResponse> {
         if (!dataSourceSetting.isValid()) {
             return resolvedPromise(ClientResponse(ResultCode.SETTING_ERROR, "setting error"))
         }

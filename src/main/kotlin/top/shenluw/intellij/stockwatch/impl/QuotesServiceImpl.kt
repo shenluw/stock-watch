@@ -7,6 +7,7 @@ import com.intellij.util.castSafelyTo
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
+import top.shenluw.intellij.stockwatch.client.ScriptPollClient
 import top.shenluw.intellij.stockwatch.client.SinaClient
 import top.shenluw.intellij.stockwatch.client.TigerClient
 import top.shenluw.intellij.stockwatch.client.TigerPollClient
@@ -100,6 +101,9 @@ class QuotesServiceImpl : QuotesService, Disposable {
         }
         if (dataSourceSetting is TigerPollDataSourceSetting) {
             return TigerPollClient().castSafelyTo()
+        }
+        if (dataSourceSetting is ScriptPollDataSourceSetting) {
+            return ScriptPollClient().castSafelyTo()
         }
         return null
     }

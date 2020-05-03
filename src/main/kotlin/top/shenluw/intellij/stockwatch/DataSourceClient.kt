@@ -15,7 +15,7 @@ interface DataSourceClient<T : DataSourceSetting> {
 
     fun close()
 
-    fun testConfig(dataSourceSetting: T): Promise<ClientResponse>
+    fun testConfig(dataSourceSetting: T, symbols: SortedSet<String>): Promise<ClientResponse>
 
     fun getStockInfo(symbol: String): StockInfo?
 }
@@ -32,6 +32,10 @@ object ResultCode {
     const val NOT_SUPPORT_DATASOURCE = 1
     const val CLIENT_ERROR = 2
     const val SETTING_ERROR = 3
+    const val SCRIPT_EMPTY = 4
+    const val SCRIPT_FAIL = 5
+    const val SCRIPT_NOT_SUPPORT = 6
+    const val SYMBOL_EMPTY = 7
 }
 
 
