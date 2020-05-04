@@ -14,6 +14,7 @@ import org.apache.http.util.EntityUtils
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import top.shenluw.intellij.stockwatch.*
+import top.shenluw.intellij.stockwatch.utils.FileLogger
 import top.shenluw.plugin.dubbo.utils.KLogger
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -184,6 +185,8 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
                 return resolvedPromise(ClientResponse(ResultCode.SCRIPT_FAIL, "script $it. ${e.message}"))
             } finally {
                 HttpClientUtils.closeQuietly(httpClient)
+                engine.get("console").castSafelyTo<FileLogger>()
+                    ?.close()
             }
         }
 
@@ -191,8 +194,10 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
     }
 
     private fun createScriptEngine(script: File): ScriptEngine? {
+        val logger =
+            FileLogger(script.parentFile.absolutePath + File.separator + script.nameWithoutExtension + ".log", log)
         val engine = scriptEngineManager.getEngineByExtension(script.extension)
-        engine?.put("console", log)
+        engine?.put("console", logger)
 
         val text = script.readText(StandardCharsets.UTF_8)
         engine.eval(text)
@@ -202,6 +207,8 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
     override fun update(symbols: SortedSet<String>) {
         scriptEngines.forEach { (_, u) ->
             u.castSafelyTo<Invocable>()?.invokeFunction(ResetFunction)
+            u.get("console").castSafelyTo<FileLogger>()
+                ?.writeable = Settings.instance.enableScriptLog
         }
         this.symbolList = null
         super.update(symbols)
@@ -212,6 +219,13 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         super.close()
         HttpClientUtils.closeQuietly(httpClient)
         httpClient = null
-        scriptEngines.clear()
+        try {
+            scriptEngines.forEach { (_, u) ->
+                u.get("console").castSafelyTo<FileLogger>()
+                    ?.close()
+            }
+        } finally {
+            scriptEngines.clear()
+        }
     }
 }

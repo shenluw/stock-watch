@@ -191,6 +191,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
         symbolTextArea.text = sb.toString()
 
+        scriptLogCheckBox.isSelected = settings.enableScriptLog
+
         val patternSetting = settings.patternSetting
         fullNameCheckBox.isSelected = patternSetting.fullName
         useSymbolCheckBox.isSelected = patternSetting.useSymbol
@@ -234,6 +236,11 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         if (settings.interval != pollIntervalTextField.value as Long) {
             return true
         }
+
+        if (settings.enableScriptLog != scriptLogCheckBox.isSelected) {
+            return true
+        }
+
         val useDataSourceId = settings.useDataSourceId
         if (tigerRadioButton.isSelected) {
             if (useDataSourceId == ScriptPollDataSourceSetting::class.simpleName) {
@@ -305,6 +312,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.riseColor = riseColorBtn.text
 
         settings.patternSetting = createPatternSetting()
+
+        settings.enableScriptLog = scriptLogCheckBox.isSelected
 
         val quotesService = QuotesService.instance
         runAsync {

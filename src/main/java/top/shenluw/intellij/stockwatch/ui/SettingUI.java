@@ -31,5 +31,6 @@ public class SettingUI {
     protected JButton addScriptButton;
     protected JButton removeScriptButton;
     protected JList<String> scriptList;
+    protected JCheckBox scriptLogCheckBox;
 
 }
