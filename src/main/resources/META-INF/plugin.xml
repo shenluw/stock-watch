@@ -13,10 +13,7 @@
         <ul>
         <li>Symbol: <strong>#</strong> begins to indicate that this line does not take effect</li>
         <li><strong>ALT + Z</strong>  Quick toggle</li>
-        <li>Sina stock code example:
-               <p>US: Add gb_ prefix</p>
-               <p>Hong Kong: Add hk_ prefix</p>
-        </li>
+        <li>Support script</li>
         </ul>
         <p>&nbsp;</p>
         <h1>Preview</h1>
@@ -26,8 +23,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Add Sina Data Poll</li>
-        <li>Add 996 license</li>
+        <li>Add a script to get data</li>
+        <li>Remove sina</li>
       </ul>
       <p>
         <a href='https://github.com/shenluw/stock-watch.git'>Github</a>
