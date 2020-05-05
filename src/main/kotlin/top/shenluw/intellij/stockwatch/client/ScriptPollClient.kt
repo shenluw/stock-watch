@@ -210,7 +210,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
             u.get("console").castSafelyTo<FileLogger>()
                 ?.writeable = Settings.instance.enableScriptLog
         }
-        this.symbolList = null
+        this.symbolList = symbols.toList()
         super.update(symbols)
     }
 
