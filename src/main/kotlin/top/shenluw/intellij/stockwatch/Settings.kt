@@ -38,7 +38,7 @@ class Settings : PersistentStateComponent<Settings> {
     var tigerPollDataSourceSetting: TigerPollDataSourceSetting? = null
 
     /**
-     * 新浪股票数据源
+     * 脚本股票数据源
      */
     var scriptPollDataSourceSetting: ScriptPollDataSourceSetting? = null
 
