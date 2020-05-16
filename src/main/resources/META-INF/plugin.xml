@@ -14,6 +14,7 @@
         <li>Symbol: <strong>#</strong> begins to indicate that this line does not take effect</li>
         <li><strong>ALT + Z</strong>  Quick toggle</li>
         <li>Support script</li>
+        <li>Support for custom displays</li>
         </ul>
         <p>&nbsp;</p>
         <h1>Preview</h1>
@@ -25,10 +26,8 @@
       <ul>
         <li>Add a script to get data</li>
         <li>Remove sina</li>
+        <li>Support for custom displays</li>
       </ul>
-      <p>
-        <a href='https://github.com/shenluw/stock-watch.git'>Github</a>
-      </P>
     ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
