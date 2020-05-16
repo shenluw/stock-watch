@@ -131,7 +131,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
                 if (selectedFile != null) {
                     Settings.instance.lastScriptDir = selectedFile.parentFile.absolutePath
                     val files = chooser.selectedFiles
-                    scriptList.setListData(files.map { it.absolutePath }.toTypedArray())
+                    val items = scriptList.getItems()
+                    items.addAll(files.map { it.absolutePath })
+                    scriptList.setListData(items.distinct().toTypedArray())
                 }
                 return true
             }

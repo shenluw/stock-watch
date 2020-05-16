@@ -9,7 +9,7 @@ import javax.swing.JList
  */
 object UiUtil {
 
-    inline fun <reified E> JList<E>.getItems(): List<E> {
+    inline fun <reified E> JList<E>.getItems(): MutableList<E> {
         val items = arrayListOf<E>()
         for (i in 0 until model.size) {
             model.getElementAt(i).castSafelyTo<E>()?.run {
