@@ -154,7 +154,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private fun toString(stockInfo: StockInfo): String {
         val name = nameStrategy.transform(stockInfo)
-        var price = stockInfo.price
+        var price: Double? = 0.0
         var percentage = stockInfo.percentage
         val timestamp = stockInfo.timestamp
         if (timestamp != null && Settings.instance.preAndAfterTrading) {
@@ -167,6 +167,10 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
                 percentage = stockInfo.afterPercentage
             }
         }
+        if (price == null) {
+            price = stockInfo.price
+        }
+
         return "[$name ${price}|${formatCache.get().format(percentage?.times(100))}%]"
     }
 

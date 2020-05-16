@@ -13,9 +13,9 @@ object TradingUtil {
     private val zoneId = ZoneId.of("America/New_York")
 
     fun isPreTimeRange(timestamp: Long): Boolean {
-        if (!isTradingDay()) {
-            return false
-        }
+//        if (!isTradingDay()) {
+//            return false
+//        }
 
         val instant = Instant.ofEpochMilli(timestamp)
         val dateTime = instant.atZone(zoneId)
@@ -32,9 +32,9 @@ object TradingUtil {
     }
 
     fun isAfterTimeRange(timestamp: Long): Boolean {
-        if (!isTradingDay()) {
-            return false
-        }
+//        if (!isTradingDay()) {
+//            return false
+//        }
         val instant = Instant.ofEpochMilli(timestamp)
         val dateTime = instant.atZone(zoneId)
 
