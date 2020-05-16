@@ -176,17 +176,12 @@ data class ScriptPollDataSourceSetting(
 }
 
 /**
- * @param fullName 是否使用全称显示
  * @param namePrefix 取名称前N个字符显示
- * @param useSymbol 使用股票代码显示
  */
 @Tag("pattern-setting")
 data class PatternSetting(
     @Property
-    val fullName: Boolean = true,
-    @Property
     var namePrefix: Int = 2,
-    @Property
-    var useSymbol: Boolean = false
+    var pattern: String = "[\${name} \${price} | \${percentage}%]"
 ) :
     Serializable

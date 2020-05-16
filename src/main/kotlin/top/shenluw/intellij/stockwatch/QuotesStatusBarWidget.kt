@@ -7,6 +7,8 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.text.DateFormatUtil
+import org.apache.commons.lang.text.StrLookup
+import org.apache.commons.lang.text.StrSubstitutor
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
@@ -67,7 +69,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
         var label = stocks[symbol]
 
-        val text = toString(stockInfo)
+        val text = formatStatusBarItemText(stockInfo)
         if (label == null) {
             label = JLabel(text)
             container?.add(label)
@@ -139,11 +141,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private fun createNameStrategy(): NameStrategy {
         val patternSetting = Settings.instance.patternSetting
-        return if (patternSetting.fullName) {
-            FullNameStrategy(patternSetting.useSymbol)
-        } else {
-            PrefixNameStrategy(patternSetting.namePrefix)
-        }
+        return PrefixNameStrategy(patternSetting.namePrefix)
     }
 
     private val formatCache = object : ThreadLocal<DecimalFormat>() {
@@ -152,7 +150,18 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         }
     }
 
-    private fun toString(stockInfo: StockInfo): String {
+    private fun toolTipText(info: StockInfo): String {
+        return """
+            今开: ${info.openPrice} 昨收: ${info.preClose}          
+            最高: ${info.high} 最低: ${info.low}
+            现价: ${info.price} 成交量: ${formatVolume(info.volume)}            
+            ${info.timestamp?.let { DateFormatUtil.formatTimeWithSeconds(it) }}            
+        """.trimIndent()
+    }
+
+    private fun formatStatusBarItemText(stockInfo: StockInfo): String {
+        val setting = Settings.instance
+
         val name = nameStrategy.transform(stockInfo)
         var price: Double? = 0.0
         var percentage = stockInfo.percentage
@@ -171,16 +180,37 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
             price = stockInfo.price
         }
 
-        return "[$name ${price}|${formatCache.get().format(percentage?.times(100))}%]"
+        val pattern = setting.patternSetting.pattern
+
+        return StrSubstitutor(MyStrLookup(mapOf(
+            "name" to name,
+            "symbol" to stockInfo.symbol,
+            "openPrice" to stockInfo.openPrice,
+            "preClose" to stockInfo.preClose,
+            "price" to price,
+            "high" to stockInfo.high,
+            "low" to stockInfo.low,
+            "volume" to formatVolume(stockInfo.volume),
+            "prePrice" to stockInfo.prePrice,
+            "afterPrice" to stockInfo.afterPrice,
+            "percentage" to formatCache.get().format(percentage?.times(100)),
+            "prePercentage" to formatCache.get().format(stockInfo.prePercentage?.times(100)),
+            "afterPercentage" to formatCache.get().format(stockInfo.afterPercentage?.times(100)),
+            "timestamp" to stockInfo.timestamp?.let { DateFormatUtil.formatTimeWithSeconds(it) }
+        )))
+            .replace(pattern)
     }
 
-    private fun toolTipText(info: StockInfo): String {
-        return """
-            今开: ${info.openPrice} 昨收: ${info.preClose}          
-            最高: ${info.high} 最低: ${info.low}
-            现价: ${info.price} 成交量: ${formatVolume(info.volume)}            
-            ${info.timestamp?.let { DateFormatUtil.formatTimeWithSeconds(it) }}            
-        """.trimIndent()
+    private class MyStrLookup(private val map: Map<*, *>?) : StrLookup() {
+
+        override fun lookup(key: String?): String? {
+            return if (map == null) {
+                "--"
+            } else {
+                val obj = map[key] ?: return "--"
+                return obj.toString()
+            }
+        }
     }
 
     private fun formatVolume(value: Long?): String {

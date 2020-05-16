@@ -159,11 +159,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
     private fun initPatternSetting() {
         prefixCountSpinner.model = SpinnerNumberModel(2, 0, 10, 1)
-
-        prefixCountSpinner.isEnabled = !fullNameCheckBox.isSelected
-        fullNameCheckBox.addItemListener {
-            prefixCountSpinner.isEnabled = it.stateChange != ItemEvent.SELECTED
-        }
     }
 
     private fun initPoll() {
@@ -196,9 +191,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         scriptLogCheckBox.isSelected = settings.enableScriptLog
 
         val patternSetting = settings.patternSetting
-        fullNameCheckBox.isSelected = patternSetting.fullName
-        useSymbolCheckBox.isSelected = patternSetting.useSymbol
         prefixCountSpinner.value = patternSetting.namePrefix
+        displayFormatTextField.text = patternSetting.pattern
 
         onlyCloseUICheckBox.isSelected = settings.onlyCloseUI
 
@@ -390,9 +384,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
     private fun createPatternSetting(): PatternSetting {
         return PatternSetting(
-            fullNameCheckBox.isSelected,
             prefixCountSpinner.value as Int,
-            useSymbolCheckBox.isSelected
+            displayFormatTextField.text
         )
     }
 

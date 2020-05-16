@@ -16,6 +16,28 @@
 
 ![status bar](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg)
 
+## 显示格式化参数
+例如：
+ 
+    [${name} ${price} | ${percentage}%]
+    显示结果 [苹果 10 | 1.1%]
+~~~
+变量约定:
+    name             股票名称
+    symbol           股票代码
+    openPrice        开盘价
+    preClose         上一日收盘价
+    price            当前价格
+    high             最高价
+    low              最低价
+    volume           成交量
+    prePrice         盘前价
+    afterPrice       盘后价
+    percentage       涨跌幅
+    prePercentage    盘前涨跌幅
+    afterPercentage  盘后涨跌幅
+    timestamp        更新时间
+~~~
 ## 自定义脚本编写规则
 ~~~javascript
 // 使用get请求获取数据
