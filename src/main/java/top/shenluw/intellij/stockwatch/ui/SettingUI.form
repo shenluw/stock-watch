@@ -81,7 +81,8 @@
           <component id="d1408" class="javax.swing.JCheckBox" binding="onlyCloseUICheckBox">
             <constraints/>
             <properties>
-              <selected value="true"/>
+              <enabled value="true"/>
+              <selected value="false"/>
               <text value="只隐藏UI"/>
               <toolTipText value="快捷键关闭时只隐藏UI，不关闭连接"/>
             </properties>
