@@ -33,9 +33,6 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
-        <applicationInitializedListener implementation="top.shenluw.intellij.MyApplicationInitializedListener"/>
-
         <applicationService serviceImplementation="top.shenluw.intellij.stockwatch.Settings"/>
         <applicationService serviceInterface="top.shenluw.intellij.stockwatch.QuotesService"
                             serviceImplementation="top.shenluw.intellij.stockwatch.impl.QuotesServiceImpl"/>

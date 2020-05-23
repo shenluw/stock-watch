@@ -8,6 +8,7 @@ import com.tigerbrokers.stock.openapi.client.https.request.quote.QuoteSymbolName
 import com.tigerbrokers.stock.openapi.client.struct.enums.Language
 import com.tigerbrokers.stock.openapi.client.struct.enums.Market
 import com.tigerbrokers.stock.openapi.client.util.ApiLogger
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
@@ -15,6 +16,7 @@ import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.compress
 import top.shenluw.intellij.stockwatch.utils.uncompress
 import top.shenluw.plugin.dubbo.utils.KLogger
+import java.security.Security
 import java.util.*
 
 /**
@@ -30,6 +32,8 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
         private var lastUpdateTimestamp: Long = 0L
 
         init {
+            Security.addProvider(BouncyCastleProvider())
+
             ApiLogger.setDebugEnabled(false)
             ApiLogger.setInfoEnabled(false)
             ApiLogger.setErrorEnabled(true)

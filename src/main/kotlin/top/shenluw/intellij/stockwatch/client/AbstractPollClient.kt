@@ -43,7 +43,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
 
         scheduledService.scheduleAtFixedRate({
             val application = Application
-            if (!application.isDisposed && !application.isDisposeInProgress) {
+            if (!application.isDisposed) {
                 val publisher = application.messageBus.syncPublisher(QuotesTopic)
                 fetch().forEach {
                     cache[it.symbol] = it
