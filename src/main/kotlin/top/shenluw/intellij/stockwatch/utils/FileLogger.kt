@@ -86,7 +86,7 @@ class FileLogger(val path: String, val logger: Logger) : Logger(), Closeable, Au
             } else {
                 ""
             }
-            writer?.write("$level: $message $d")
+            writer?.println("$level: $message $d")
         }
         t?.printStackTrace(writer)
         writer?.flush()
