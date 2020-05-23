@@ -196,6 +196,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
     private fun createScriptEngine(script: File): ScriptEngine? {
         val logger =
             FileLogger(script.parentFile.absolutePath + File.separator + script.nameWithoutExtension + ".log", log)
+        logger.writeable = Settings.instance.enableScriptLog
         val engine = scriptEngineManager.getEngineByExtension(script.extension)
         engine?.put("console", logger)
 
