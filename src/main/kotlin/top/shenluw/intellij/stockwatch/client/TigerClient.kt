@@ -179,7 +179,7 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
 
         cache[symbol] = info
         val application = Application
-        if (!application.isDisposed && !application.isDisposeInProgress) {
+        if (!application.isDisposed) {
             application.messageBus.syncPublisher(QuotesTopic).quoteChange(info)
         }
     }

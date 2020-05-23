@@ -25,12 +25,6 @@ import java.util.*
  */
 interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogger {
     private companion object {
-        @Volatile
-        private var symbolNameItems: List<SymbolNameItem>? = null
-
-        @Volatile
-        private var lastUpdateTimestamp: Long = 0L
-
         init {
             Security.addProvider(BouncyCastleProvider())
 
@@ -38,6 +32,14 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
             ApiLogger.setInfoEnabled(false)
             ApiLogger.setErrorEnabled(true)
         }
+    }
+
+    private object Cache {
+        @Volatile
+        var symbolNameItems: List<SymbolNameItem>? = null
+
+        @Volatile
+        var lastUpdateTimestamp: Long = 0L
     }
 
     override fun testConfig(dataSourceSetting: T, symbols: SortedSet<String>): Promise<ClientResponse> {
@@ -65,24 +67,23 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
     }
 
     fun findSymbolName(symbol: String): SymbolNameItem? {
-        if (symbolNameItems != null) {
-            return symbolNameItems?.find { it.symbol == symbol }
+        if (Cache.symbolNameItems != null) {
+            return Cache.symbolNameItems?.find { it.symbol == symbol }
         }
         return null
     }
 
     fun updateSymbolNames(setting: ITigerDataSourceSetting, force: Boolean = false) {
         // 超过5分钟允许重新获取接口数据
-        if (force && System.currentTimeMillis() - lastUpdateTimestamp < 5 * 60 * 1000) {
+        if (force && System.currentTimeMillis() - Cache.lastUpdateTimestamp < 5 * 60 * 1000) {
             return
         }
-
         val runnable = {
             val items = fetchSymbolNames(setting)
             if (items != null) {
                 Settings.instance.symbolNameCache = compress(JSON.toJSONBytes(items))
             }
-            symbolNameItems = items
+            Cache.symbolNameItems = items
         }
 
         if (force) {
@@ -90,15 +91,15 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
             return
         }
 
-        if (symbolNameItems == null) {
+        if (Cache.symbolNameItems == null) {
             val cache = Settings.instance.symbolNameCache
             if (!cache.isNullOrBlank()) {
                 try {
-                    symbolNameItems = JSON.parseArray(uncompress(cache), SymbolNameItem::class.java)
+                    Cache.symbolNameItems = JSON.parseArray(uncompress(cache), SymbolNameItem::class.java)
                 } catch (e: Exception) {
                 }
             }
-            if (symbolNameItems == null) {
+            if (Cache.symbolNameItems == null) {
                 runnable.invoke()
             }
         }
@@ -107,8 +108,8 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
     private fun fetchSymbolNames(setting: ITigerDataSourceSetting): MutableList<SymbolNameItem>? {
         val client = createApiClient(setting)
         val response = client.execute(QuoteSymbolNameRequest.newRequest(Market.ALL, Language.zh_CN))
-        return if (response.isSuccess) {
-            response.symbolNameItems
+        return if (response != null && response.isSuccess) {
+            response.symbolNameItems.toMutableList()
         } else {
             log.error("fetchSymbolNames error:" + response.message)
             null
