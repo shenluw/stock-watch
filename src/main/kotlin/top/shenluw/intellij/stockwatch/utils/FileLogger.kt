@@ -6,7 +6,6 @@ import java.io.Closeable
 import java.io.File
 import java.io.FileWriter
 import java.io.PrintWriter
-import java.nio.charset.StandardCharsets
 
 /**
  * @author Shenluw
@@ -98,7 +97,7 @@ class FileLogger(val path: String, val logger: Logger) : Logger(), Closeable, Au
     @Synchronized
     fun open() {
         if (writer == null) {
-            writer = PrintWriter(FileWriter(File(path), StandardCharsets.UTF_8, true))
+            writer = PrintWriter(FileWriter(File(path), true))
         }
     }
 
