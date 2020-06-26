@@ -24,9 +24,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Add a script to get data</li>
-        <li>Remove sina</li>
-        <li>Support for custom displays</li>
+        <li>Fix some bugs</li>
+        <li>Support ',' Split Stock Code</li>
       </ul>
     ]]></change-notes>
 
