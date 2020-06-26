@@ -15,7 +15,6 @@ import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.text.DecimalFormat
-import java.util.*
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -107,7 +106,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         }
     }
 
-    override fun symbolChange(symbols: SortedSet<String>) {
+    override fun symbolChange(symbols: MutableSet<String>) {
         val iterator = stocks.iterator()
         while (iterator.hasNext()) {
             val entry = iterator.next()

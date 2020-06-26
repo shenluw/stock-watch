@@ -18,7 +18,6 @@ import top.shenluw.intellij.stockwatch.utils.FileLogger
 import top.shenluw.plugin.dubbo.utils.KLogger
 import java.io.File
 import java.nio.charset.StandardCharsets
-import java.util.*
 import javax.script.Invocable
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
@@ -128,7 +127,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         return emptyList()
     }
 
-    override fun start(dataSourceSetting: ScriptPollDataSourceSetting, symbols: SortedSet<String>) {
+    override fun start(dataSourceSetting: ScriptPollDataSourceSetting, symbols: MutableSet<String>) {
         if (!dataSourceSetting.isValid()) {
             throw ClientException("setting error")
         }
@@ -158,8 +157,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
     }
 
     override fun testConfig(
-        dataSourceSetting: ScriptPollDataSourceSetting,
-        symbols: SortedSet<String>
+        dataSourceSetting: ScriptPollDataSourceSetting, symbols: Set<String>
     ): Promise<ClientResponse> {
         val actives = dataSourceSetting.actives
         if (actives.isNullOrEmpty()) {
@@ -205,7 +203,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         return engine
     }
 
-    override fun update(symbols: SortedSet<String>) {
+    override fun update(symbols: MutableSet<String>) {
         scriptEngines.forEach { (_, u) ->
             u.castSafelyTo<Invocable>()?.invokeFunction(ResetFunction)
             u.get("console").castSafelyTo<FileLogger>()

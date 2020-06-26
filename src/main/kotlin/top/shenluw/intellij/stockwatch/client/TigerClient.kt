@@ -14,7 +14,6 @@ import top.shenluw.intellij.Application
 import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.plugin.dubbo.utils.KLogger
-import java.util.*
 
 
 /**
@@ -26,14 +25,14 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
     @Volatile
     private var socketClient: WebSocketClient? = null
 
-    private var symbols: SortedSet<String>? = null
+    private var symbols: MutableSet<String>? = null
 
     private var dataSourceSetting: TigerDataSourceSetting? = null
 
     private var cache = concurrentMapOf<String, StockInfo>()
 
     @Synchronized
-    override fun start(dataSourceSetting: TigerDataSourceSetting, symbols: SortedSet<String>) {
+    override fun start(dataSourceSetting: TigerDataSourceSetting, symbols: MutableSet<String>) {
         if (!dataSourceSetting.isValid()) {
             throw ClientException("setting error")
         }
@@ -72,7 +71,7 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
         cache.clear()
     }
 
-    override fun update(symbols: SortedSet<String>) {
+    override fun update(symbols: MutableSet<String>) {
         if (CollectionUtils.isEqualCollection(this.symbols, symbols)) {
             return
         }
@@ -87,7 +86,7 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
         return cache.getOrDefault(symbol, null)
     }
 
-    private fun subscribeQuote(symbols: SortedSet<String>) {
+    private fun subscribeQuote(symbols: MutableSet<String>) {
         if (socketClient?.isConnected == true) {
             val focusKeys = arrayListOf(
                 "marketStatus", "preClose", "latestPrice", "symbol",

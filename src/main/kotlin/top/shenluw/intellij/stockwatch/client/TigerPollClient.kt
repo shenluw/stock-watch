@@ -11,7 +11,6 @@ import top.shenluw.intellij.stockwatch.StockInfo
 import top.shenluw.intellij.stockwatch.TigerPollDataSourceSetting
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
 
 /**
  * @author Shenluw
@@ -59,7 +58,7 @@ class TigerPollClient : AbstractPollClient<TigerPollDataSourceSetting>(), ITiger
         }
     }
 
-    override fun start(dataSourceSetting: TigerPollDataSourceSetting, symbols: SortedSet<String>) {
+    override fun start(dataSourceSetting: TigerPollDataSourceSetting, symbols: MutableSet<String>) {
         if (!dataSourceSetting.isValid()) {
             throw ClientException("setting error")
         }
@@ -74,7 +73,7 @@ class TigerPollClient : AbstractPollClient<TigerPollDataSourceSetting>(), ITiger
         startPoll()
     }
 
-    override fun update(symbols: SortedSet<String>) {
+    override fun update(symbols: MutableSet<String>) {
         this.request = null
         super.update(symbols)
     }

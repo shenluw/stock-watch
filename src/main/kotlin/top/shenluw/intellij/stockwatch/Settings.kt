@@ -12,7 +12,6 @@ import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.awt.Color
 import java.io.File
 import java.io.Serializable
-import java.util.*
 
 /**
  * @author Shenluw
@@ -25,7 +24,7 @@ class Settings : PersistentStateComponent<Settings> {
      * 股票代码
      */
     @XCollection
-    var symbols: SortedSet<String> = sortedSetOf()
+    var symbols: MutableSet<String> = linkedSetOf()
 
     /**
      * 老虎股票数据源
@@ -93,8 +92,9 @@ class Settings : PersistentStateComponent<Settings> {
     var symbolNameCache: String? = null
 
     @Transient
-    fun getRealSymbols(): SortedSet<String> {
-        return symbols.filter { !TradingUtil.isIgnoreSymbol(it) }.toSortedSet()
+    fun getRealSymbols(): MutableSet<String> {
+        return symbols.filter { !TradingUtil.isIgnoreSymbol(it) }
+            .toHashSet()
     }
 
     override fun getState(): Settings? = this

@@ -78,7 +78,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
                 client.testConfig(
                     setting,
                     transform(symbolTextArea.text)
-                        .filter { !TradingUtil.isIgnoreSymbol(it) }.toSortedSet()
+                        .filter { !TradingUtil.isIgnoreSymbol(it) }.toHashSet()
                 )
                     .onSuccess {
                         UIUtil.invokeAndWaitIfNeeded(Runnable {
@@ -176,7 +176,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         tigerIdTextField.text = sourceSetting?.tigerId
         privateKeyTextArea.text = sourceSetting?.privateKey
         val sb = StringBuilder()
-        val symbols: SortedSet<String> = settings.symbols
+        val symbols: Set<String> = settings.symbols
         if (!symbols.isNullOrEmpty()) {
             val iterator: Iterator<String?> = symbols.iterator()
             while (iterator.hasNext()) {
@@ -389,8 +389,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         )
     }
 
-    private fun transform(text: String?): SortedSet<String> {
-        val set: SortedSet<String> = TreeSet()
+    private fun transform(text: String?): MutableSet<String> {
+        val set = linkedSetOf<String>()
         if (text.isNullOrBlank()) {
             return set
         }

@@ -6,7 +6,6 @@ import top.shenluw.intellij.stockwatch.DataSourceClient
 import top.shenluw.intellij.stockwatch.DataSourceSetting
 import top.shenluw.intellij.stockwatch.QuotesTopic
 import top.shenluw.intellij.stockwatch.StockInfo
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -24,7 +23,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
     /* 轮询间隔 */
     var interval: Long = 10_000
 
-    protected var symbols: SortedSet<String>? = null
+    protected var symbols: MutableSet<String>? = null
 
     private var scheduledService: ScheduledExecutorService? = null
 
@@ -54,7 +53,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
     }
 
     @Synchronized
-    override fun update(symbols: SortedSet<String>) {
+    override fun update(symbols: MutableSet<String>) {
         if (CollectionUtils.isEqualCollection(this.symbols, symbols)) {
             return
         }

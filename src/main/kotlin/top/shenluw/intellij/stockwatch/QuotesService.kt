@@ -1,7 +1,6 @@
 package top.shenluw.intellij.stockwatch
 
 import com.intellij.openapi.components.ServiceManager
-import java.util.*
 
 /**
  * @author Shenluw
@@ -53,7 +52,7 @@ interface QuotesService {
          * 监听列表变化
          * @param symbols 当前列表
          */
-        fun symbolChange(symbols: SortedSet<String>)
+        fun symbolChange(symbols: MutableSet<String>)
 
         /**
          * 是否开启插件功能

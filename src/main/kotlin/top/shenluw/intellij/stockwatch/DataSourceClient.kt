@@ -1,7 +1,6 @@
 package top.shenluw.intellij.stockwatch
 
 import org.jetbrains.concurrency.Promise
-import java.util.*
 
 /**
  * @author Shenluw
@@ -9,13 +8,13 @@ import java.util.*
  */
 interface DataSourceClient<T : DataSourceSetting> {
 
-    fun start(dataSourceSetting: T, symbols: SortedSet<String>)
+    fun start(dataSourceSetting: T, symbols: MutableSet<String>)
 
-    fun update(symbols: SortedSet<String>)
+    fun update(symbols: MutableSet<String>)
 
     fun close()
 
-    fun testConfig(dataSourceSetting: T, symbols: SortedSet<String>): Promise<ClientResponse>
+    fun testConfig(dataSourceSetting: T, symbols: Set<String>): Promise<ClientResponse>
 
     fun getStockInfo(symbol: String): StockInfo?
 }
