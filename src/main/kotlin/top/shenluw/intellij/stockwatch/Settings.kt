@@ -94,6 +94,10 @@ class Settings : PersistentStateComponent<Settings> {
     @Transient
     fun getRealSymbols(): MutableSet<String> {
         return symbols.filter { !TradingUtil.isIgnoreSymbol(it) }
+            .flatMap { it.split(",") }
+            .filter { it.isNotBlank() }
+            .map { it.trim() }
+            .filter { !TradingUtil.isIgnoreSymbol(it) }
             .toHashSet()
     }
 

@@ -27,6 +27,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private var container: JPanel? = null
     private val stocks = hashMapOf<String, JLabel>()
+    private var symbols = emptySet<String>()
 
     private var nameStrategy: NameStrategy = FullNameStrategy(false)
     private var msgConn: MessageBusConnection? = null
@@ -42,6 +43,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun install(statusBar: StatusBar) {
         CurrentProject = statusBar.project
+
+        symbols = Settings.instance.getRealSymbols()
 
         nameStrategy = createNameStrategy()
 
@@ -62,7 +65,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun quoteChange(stockInfo: StockInfo) {
         val symbol = stockInfo.symbol
-        if (symbol !in Settings.instance.symbols) {
+        if (symbol !in symbols) {
             return
         }
 
@@ -107,6 +110,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     override fun symbolChange(symbols: MutableSet<String>) {
+        this.symbols = symbols
         val iterator = stocks.iterator()
         while (iterator.hasNext()) {
             val entry = iterator.next()
