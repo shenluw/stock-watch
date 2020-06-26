@@ -163,7 +163,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         val setting = Settings.instance
 
         val name = nameStrategy.transform(stockInfo)
-        var price: Double? = 0.0
+        var price: Double? = null
         var percentage = stockInfo.percentage
         val timestamp = stockInfo.timestamp
         if (timestamp != null && Settings.instance.preAndAfterTrading) {
