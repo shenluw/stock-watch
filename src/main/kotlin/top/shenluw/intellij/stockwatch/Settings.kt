@@ -11,7 +11,6 @@ import org.apache.commons.collections.CollectionUtils
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.awt.Color
 import java.io.File
-import java.io.Serializable
 
 /**
  * @author Shenluw
@@ -86,8 +85,10 @@ class Settings : PersistentStateComponent<Settings> {
      */
     var preAndAfterTrading: Boolean = true
 
-
-    var patternSetting: PatternSetting = PatternSetting()
+    /**
+     * statusBar显示样式
+     */
+    var pattern: String = "[\${name} \${price} | \${percentage}%]"
 
     var symbolNameCache: String? = null
 
@@ -178,14 +179,3 @@ data class ScriptPollDataSourceSetting(
         return CollectionUtils.isSubCollection(actives ?: emptyList<String>(), paths)
     }
 }
-
-/**
- * @param namePrefix 取名称前N个字符显示
- */
-@Tag("pattern-setting")
-data class PatternSetting(
-    @Property
-    var namePrefix: Int = 2,
-    var pattern: String = "[\${name} \${price} | \${percentage}%]"
-) :
-    Serializable

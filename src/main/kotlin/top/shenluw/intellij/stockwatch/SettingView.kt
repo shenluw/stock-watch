@@ -103,8 +103,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             }
         }.installOn(testConnectBtn)
 
-        initPatternSetting()
-
         initPoll()
 
         val group = ButtonGroup()
@@ -157,10 +155,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }.installOn(removeScriptButton)
     }
 
-    private fun initPatternSetting() {
-        prefixCountSpinner.model = SpinnerNumberModel(2, 0, 10, 1)
-    }
-
     private fun initPoll() {
         pollCheckBox.addItemListener {
             pollIntervalTextField.isEnabled = it.stateChange == ItemEvent.SELECTED
@@ -190,9 +184,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         scriptLogCheckBox.isSelected = settings.enableScriptLog
 
-        val patternSetting = settings.patternSetting
-        prefixCountSpinner.value = patternSetting.namePrefix
-        displayFormatTextField.text = patternSetting.pattern
+        displayFormatTextField.text = settings.pattern
 
         onlyCloseUICheckBox.isSelected = settings.onlyCloseUI
 
@@ -272,9 +264,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         if (riseColorBtn.text != settings.riseColor) {
             return true
         }
-        val patternSetting = createPatternSetting()
-
-        if (settings.patternSetting != patternSetting) {
+        if (settings.pattern != displayFormatTextField.text) {
             return true
         }
 
@@ -307,7 +297,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.fallColor = fallColorBtn.text
         settings.riseColor = riseColorBtn.text
 
-        settings.patternSetting = createPatternSetting()
+        settings.pattern = displayFormatTextField.text
 
         settings.enableScriptLog = scriptLogCheckBox.isSelected
 
@@ -382,13 +372,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
     }
 
-    private fun createPatternSetting(): PatternSetting {
-        return PatternSetting(
-            prefixCountSpinner.value as Int,
-            displayFormatTextField.text
-        )
-    }
-
     private fun transform(text: String?): MutableSet<String> {
         val set = linkedSetOf<String>()
         if (text.isNullOrBlank()) {
@@ -403,7 +386,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
                     }
                 }
             }
-        } catch (e: Exception) {
+        } catch (ignore: Exception) {
         }
         return set
     }
@@ -439,7 +422,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
 
         override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
-            ColorPicker.showColorPickerPopup(CurrentProject, colorButton.background, this)
+            ColorPicker.showColorPickerPopup(CurrentProject, getColor(colorButton.text), this)
             return true
         }
 

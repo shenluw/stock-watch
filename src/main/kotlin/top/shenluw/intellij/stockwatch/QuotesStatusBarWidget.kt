@@ -173,7 +173,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
             price = stockInfo.price
         }
 
-        val pattern = setting.patternSetting.pattern
+        val pattern = setting.pattern
 
         return StrSubstitutor(MyStrLookup(mapOf(
             "name" to stockInfo.name,

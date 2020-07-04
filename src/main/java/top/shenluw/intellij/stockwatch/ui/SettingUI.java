@@ -19,7 +19,6 @@ public class SettingUI {
     protected JButton riseColorBtn;
     protected JButton fallColorBtn;
     protected JButton testConnectBtn;
-    protected JSpinner prefixCountSpinner;
     protected JCheckBox onlyCloseUICheckBox;
     protected JCheckBox pollCheckBox;
     protected JFormattedTextField pollIntervalTextField;
