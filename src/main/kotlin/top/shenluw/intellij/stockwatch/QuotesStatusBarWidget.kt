@@ -29,7 +29,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     private val stocks = hashMapOf<String, JLabel>()
     private var symbols = emptySet<String>()
 
-    private var nameStrategy: NameStrategy = FullNameStrategy(false)
     private var msgConn: MessageBusConnection? = null
 
     override fun ID(): String {
@@ -45,8 +44,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         CurrentProject = statusBar.project
 
         symbols = Settings.instance.getRealSymbols()
-
-        nameStrategy = createNameStrategy()
 
         QuotesService.instance.init()
 
@@ -130,7 +127,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun settingChange() {
         val settings = Settings.instance
-        nameStrategy = createNameStrategy()
 
         symbolChange(settings.getRealSymbols())
 
@@ -140,11 +136,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
                 quoteChange(info)
             }
         }
-    }
-
-    private fun createNameStrategy(): NameStrategy {
-        val patternSetting = Settings.instance.patternSetting
-        return PrefixNameStrategy(patternSetting.namePrefix)
     }
 
     private val formatCache = object : ThreadLocal<DecimalFormat>() {
@@ -165,7 +156,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     private fun formatStatusBarItemText(stockInfo: StockInfo): String {
         val setting = Settings.instance
 
-        val name = nameStrategy.transform(stockInfo)
         var price: Double? = null
         var percentage = stockInfo.percentage
         val timestamp = stockInfo.timestamp
@@ -186,7 +176,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         val pattern = setting.patternSetting.pattern
 
         return StrSubstitutor(MyStrLookup(mapOf(
-            "name" to name,
+            "name" to stockInfo.name,
             "symbol" to stockInfo.symbol,
             "openPrice" to stockInfo.openPrice,
             "preClose" to stockInfo.preClose,
@@ -206,12 +196,54 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private class MyStrLookup(private val map: Map<*, *>?) : StrLookup() {
 
+        fun substring(text: String, start: Int, end: Int): String {
+            val length = text.length
+            if (start > length) {
+                return text
+            }
+            if (end > length) {
+                return text.substring(start)
+            }
+            return text.substring(start, end)
+        }
+
         override fun lookup(key: String?): String? {
+            if (key.isNullOrBlank()) {
+                return key
+            }
+
             return if (map == null) {
                 "--"
             } else {
-                val obj = map[key] ?: return "--"
-                return obj.toString()
+                var obj = map[key]
+                if (obj != null) {
+                    return obj.toString()
+                }
+                var index = key.indexOf(":")
+                if (index > 0) {
+                    val newKey = key.substring(0, index)
+                    obj = map[newKey]
+                    if (obj == null) {
+                        return "--"
+                    }
+
+                    val sub = key.substring(index + 1)
+                    index = sub.indexOf(',')
+                    return try {
+                        if (index > 0) {
+                            val start = sub.substring(0, index).toInt()
+                            val end = sub.substring(index + 1).toInt()
+                            substring(obj.toString(), start, end)
+                        } else {
+                            val len = sub.toInt()
+                            substring(obj.toString(), 0, len)
+                        }
+                    } catch (ignore: Exception) {
+                        obj.toString()
+                    }
+                }
+
+                return "--"
             }
         }
     }
