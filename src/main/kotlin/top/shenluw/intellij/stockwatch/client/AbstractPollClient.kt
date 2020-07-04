@@ -6,7 +6,6 @@ import top.shenluw.intellij.stockwatch.DataSourceClient
 import top.shenluw.intellij.stockwatch.DataSourceSetting
 import top.shenluw.intellij.stockwatch.QuotesTopic
 import top.shenluw.intellij.stockwatch.StockInfo
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -27,7 +26,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
 
     private var scheduledService: ScheduledExecutorService? = null
 
-    private val cache = ConcurrentHashMap<String, StockInfo>()
+    private val cache = hashMapOf<String, StockInfo>()
 
     protected abstract fun fetch(): List<StockInfo>
 
