@@ -22,6 +22,12 @@
  
     [${name} ${price} | ${percentage}%]
     显示结果 [苹果 10 | 1.1%]
+    
+    [${name:1} ${price} | ${percentage}%]
+    显示结果 [苹 10 | 1.1%]   
+    
+    [${name:1,2} ${price} | ${percentage}%]
+    显示结果 [果 10 | 1.1%]
 ~~~
 变量约定:
     name             股票名称
