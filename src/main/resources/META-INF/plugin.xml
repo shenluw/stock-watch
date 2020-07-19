@@ -20,12 +20,12 @@
         <h1>Preview</h1>
         <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/settingview.jpg" alt="setting view"></p>
         <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg" alt="status bar"></p>
+        <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/trendchart.jpg" alt="trend chart"></p>
     ]]></description>
 
     <change-notes><![CDATA[
       <ul>
-        <li>Fix some bugs</li>
-        <li>Support ',' Split Stock Code</li>
+        <li>quotations preview. (See the picture in detail.)</li>
       </ul>
     ]]></change-notes>
 

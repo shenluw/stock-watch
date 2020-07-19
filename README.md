@@ -9,6 +9,7 @@
 - **ALT + Z**  功能开关快捷键
 - 可以使用自定义脚本拉取数据
 - 一行可以填写多个股票代码，使用 **,** 分割
+- 添加趋势图预览
 
 
 # 运行结果
@@ -16,6 +17,7 @@
 ![setting view](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/settingview.jpg)
 
 ![status bar](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg)
+![趋势图](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/trendchart.jpg)
 
 ## 显示格式化参数
 例如：
@@ -88,6 +90,14 @@ function parse(text, symbols) {
     ]   
     return JSON.stringify(infos)
 }
+
+// 点击状态栏时调用
+// 可以显示返回链接所展示的图片
+function trendChart(symbol, type) {
+    console.info("sys" + symbol)
+    return "http://xxxx.xxx/xxx.png"
+}
+
 
 // 配置更新时调用
 function reset() {
