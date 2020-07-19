@@ -17,7 +17,6 @@ import top.shenluw.intellij.stockwatch.ui.SettingUI
 import top.shenluw.intellij.stockwatch.utils.ColorUtil.getColor
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import top.shenluw.intellij.stockwatch.utils.UiUtil.getItems
-import top.shenluw.plugin.dubbo.utils.KLogger
 import java.awt.Color
 import java.awt.event.ItemEvent
 import java.awt.event.MouseEvent

@@ -1,4 +1,4 @@
-package top.shenluw.plugin.dubbo.utils
+package top.shenluw.intellij.stockwatch
 
 import com.intellij.openapi.diagnostic.Logger
 

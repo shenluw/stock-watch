@@ -15,7 +15,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.FileLogger
-import top.shenluw.plugin.dubbo.utils.KLogger
 import java.io.File
 import java.nio.charset.StandardCharsets
 import javax.script.Invocable

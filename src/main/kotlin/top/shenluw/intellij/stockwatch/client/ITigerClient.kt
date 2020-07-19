@@ -15,7 +15,6 @@ import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.compress
 import top.shenluw.intellij.stockwatch.utils.uncompress
-import top.shenluw.plugin.dubbo.utils.KLogger
 import java.security.Security
 
 /**

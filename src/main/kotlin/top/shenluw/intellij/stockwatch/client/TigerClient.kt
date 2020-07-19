@@ -13,7 +13,6 @@ import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
-import top.shenluw.plugin.dubbo.utils.KLogger
 
 
 /**
