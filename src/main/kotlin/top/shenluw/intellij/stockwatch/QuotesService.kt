@@ -1,6 +1,7 @@
 package top.shenluw.intellij.stockwatch
 
 import com.intellij.openapi.components.ServiceManager
+import java.net.URL
 
 /**
  * @author Shenluw
@@ -41,6 +42,27 @@ interface QuotesService {
      * 获取当前使用的数据源client
      */
     fun getDataSourceClient(): DataSourceClient<DataSourceSetting>?
+
+    /**
+     * 获取趋势图 图像地址
+     * @return 如果返回值为null， 表示不支持获取
+     */
+    fun getTrendChart(symbol: String, type: TrendType): URL?
+
+    enum class TrendType {
+
+        /* 分钟级别 相当于实时 */
+        MINUTE,
+
+        /* 日K */
+        DAILY,
+
+        /* 周K */
+        WEEKLY,
+
+        /* 月K */
+        MONTHLY
+    }
 
     interface QuotesListener {
         /**

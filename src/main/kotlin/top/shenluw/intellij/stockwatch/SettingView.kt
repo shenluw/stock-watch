@@ -33,6 +33,10 @@ import javax.swing.text.NumberFormatter
  * created: 2020/3/29 17:03
  */
 class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
+    /**
+     *  枚举和ui映射关系
+     */
+    private val trendGroupMap = hashMapOf<String, JRadioButton>()
 
     init {
         helpLinkLabel.setHyperlinkTarget(TIGER_HELP_LINK)
@@ -109,6 +113,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         group.add(scriptRadioButton)
 
         initScriptPane()
+
+        initTrendChart()
     }
 
     private val scriptFileScript =
@@ -161,6 +167,20 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         pollIntervalTextField.formatterFactory = DefaultFormatterFactory(NumberFormatter())
     }
 
+    private fun initTrendChart() {
+        trendGroupMap["NONE"] = trendNoneRadioButton
+        trendGroupMap[QuotesService.TrendType.MINUTE.name] = trendMinuteRadioButton
+        trendGroupMap[QuotesService.TrendType.DAILY.name] = trendDailyRadioButton
+        trendGroupMap[QuotesService.TrendType.WEEKLY.name] = trendWeeklyRadioButton
+        trendGroupMap[QuotesService.TrendType.MONTHLY.name] = trendMonthlyRadioButton
+
+        val group = ButtonGroup()
+        for (button in trendGroupMap.values) {
+            group.add(button)
+        }
+
+    }
+
     override fun reset(settings: Settings) {
         log.debug("reset")
 
@@ -206,6 +226,16 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.scriptPollDataSourceSetting?.paths?.apply {
             scriptList.setListData(this.toTypedArray())
         }
+
+        /* 趋势图 */
+        if (settings.enableTrendChart) {
+            trendGroupMap[settings.trendType.name]?.isSelected = true
+        } else {
+            trendNoneRadioButton.isSelected = true
+        }
+
+        trendWidth.text = settings.trendPopupWidth.toString()
+        trendHeight.text = settings.trendPopupHeight.toString()
     }
 
     override fun isModified(settings: Settings): Boolean {
@@ -271,6 +301,29 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             return true
         }
 
+        /* 趋势图设置 */
+        trendGroupMap.forEach { (type, ui) ->
+            if (ui.isSelected) {
+                try {
+                    if (QuotesService.TrendType.valueOf(type) != settings.trendType || !settings.enableTrendChart) {
+                        return true
+                    }
+                } catch (e: Exception) {
+                    // 表示选中了none
+                    return ui != trendNoneRadioButton
+                }
+            }
+        }
+
+        if (settings.trendPopupWidth != trendWidth.text.toIntOrNull()) {
+            return true
+        }
+        if (settings.trendPopupHeight != trendHeight.text.toIntOrNull()) {
+            return true
+        }
+
+        /* 脚本设置 */
+
         val saved = settings.scriptPollDataSourceSetting?.paths ?: emptyList()
         val scriptModel = scriptList.model
         if (saved.size != scriptModel.size) {
@@ -299,6 +352,19 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.pattern = displayFormatTextField.text
 
         settings.enableScriptLog = scriptLogCheckBox.isSelected
+
+        /* 趋势图设置 */
+        settings.enableTrendChart = !trendNoneRadioButton.isSelected
+        trendGroupMap.forEach {
+            if (it.value.isSelected) {
+                if (settings.enableTrendChart) {
+                    settings.trendType = QuotesService.TrendType.valueOf(it.key)
+                }
+            }
+        }
+
+        settings.trendPopupWidth = trendWidth.text.toInt()
+        settings.trendPopupHeight = trendHeight.text.toInt()
 
         val quotesService = QuotesService.instance
         runAsync {

@@ -10,6 +10,7 @@ import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.client.ScriptPollClient
 import top.shenluw.intellij.stockwatch.client.TigerClient
 import top.shenluw.intellij.stockwatch.client.TigerPollClient
+import java.net.URL
 
 /**
  * @author Shenluw
@@ -106,6 +107,10 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     override fun getDataSourceClient(): DataSourceClient<DataSourceSetting>? {
         return dataSourceClient
+    }
+
+    override fun getTrendChart(symbol: String, type: QuotesService.TrendType): URL? {
+        return dataSourceClient?.getTrendChart(symbol, type)
     }
 
     override fun dispose() {

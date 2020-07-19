@@ -30,5 +30,12 @@ public class SettingUI {
     protected JList<String> scriptList;
     protected JCheckBox scriptLogCheckBox;
     protected JTextField displayFormatTextField;
+    protected JRadioButton trendMinuteRadioButton;
+    protected JRadioButton trendDailyRadioButton;
+    protected JRadioButton trendMonthlyRadioButton;
+    protected JRadioButton trendWeeklyRadioButton;
+    protected JRadioButton trendNoneRadioButton;
+    protected JTextField trendWidth;
+    protected JTextField trendHeight;
 
 }

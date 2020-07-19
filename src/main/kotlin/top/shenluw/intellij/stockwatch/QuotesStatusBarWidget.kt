@@ -1,20 +1,36 @@
 package top.shenluw.intellij.stockwatch
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.CustomStatusBarWidget
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetProvider
+import com.intellij.ui.ClickListener
+import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.text.DateFormatUtil
+import com.intellij.util.ui.ImageUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.swing.Swing
+import kotlinx.coroutines.withContext
 import org.apache.commons.lang.text.StrLookup
 import org.apache.commons.lang.text.StrSubstitutor
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
 import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
+import top.shenluw.intellij.stockwatch.utils.Images
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
+import java.awt.Dimension
+import java.awt.Point
+import java.awt.event.MouseEvent
+import java.net.URL
 import java.text.DecimalFormat
+import javax.swing.ImageIcon
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -42,6 +58,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun install(statusBar: StatusBar) {
         CurrentProject = statusBar.project
+
+        Disposer.register(statusBar.project!!, Images)
 
         symbols = Settings.instance.getRealSymbols()
 
@@ -73,6 +91,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
             label = JLabel(text)
             container?.add(label)
             stocks[symbol] = label
+            registerItemClickListener(symbol, label)
         } else {
             label.text = text
         }
@@ -270,6 +289,47 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         container = null
     }
 
+    private fun registerItemClickListener(symbol: String, component: JComponent) {
+
+        object : ClickListener() {
+            override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
+                GlobalScope.async {
+                    val url = downloadImage(symbol) ?: return@async
+
+                    withContext(Dispatchers.Swing) {
+                        if (CurrentProject == null || CurrentProject!!.isDisposed) {
+                            return@withContext
+                        }
+                        val view = createImageView(url)
+                        val builder = JBPopupFactory.getInstance()
+                            .createComponentPopupBuilder(view, null)
+                        val popup = builder.createPopup()
+                        val dimension: Dimension = popup.content.preferredSize
+                        val at = Point(0, -dimension.height)
+                        popup.show(RelativePoint(event.component, at))
+                    }
+                }
+                return true
+            }
+        }.installOn(component)
+    }
+
+    private suspend fun downloadImage(symbol: String): URL? {
+        val settings = Settings.instance
+        if (!settings.enableTrendChart) {
+            return null
+        }
+        val url: URL? = QuotesService.instance.getTrendChart(symbol, Settings.instance.trendType) ?: return null
+        return Images.downloadImage(url!!)
+    }
+
+    private fun createImageView(url: URL): JComponent {
+        val settings = Settings.instance
+        val image = ImageUtil.scaleImage(ImageIcon(url).image, settings.trendPopupWidth, settings.trendPopupHeight)
+        val label = JLabel("", ImageIcon(image), JLabel.CENTER)
+        label.setSize(settings.trendPopupWidth, settings.trendPopupHeight)
+        return label
+    }
 }
 
 

@@ -1,6 +1,7 @@
 package top.shenluw.intellij.stockwatch
 
 import org.jetbrains.concurrency.Promise
+import java.net.URL
 
 /**
  * @author Shenluw
@@ -14,9 +15,20 @@ interface DataSourceClient<T : DataSourceSetting> {
 
     fun close()
 
+    /**
+     * 测试配置是否正确
+     */
     fun testConfig(dataSourceSetting: T, symbols: Set<String>): Promise<ClientResponse>
 
     fun getStockInfo(symbol: String): StockInfo?
+
+    /**
+     * 获取趋势图 图像地址
+     * @return 如果返回值为null， 表示不支持获取
+     */
+    fun getTrendChart(symbol: String, type: QuotesService.TrendType): URL? {
+        return null
+    }
 }
 
 data class ClientResponse(val code: Int, val msg: String? = null) {

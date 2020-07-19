@@ -16,6 +16,7 @@ import org.jetbrains.concurrency.resolvedPromise
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.utils.FileLogger
 import java.io.File
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import javax.script.Invocable
 import javax.script.ScriptEngine
@@ -26,10 +27,14 @@ import javax.script.ScriptEngineManager
  * created: 2020/4/19 20:52
  */
 class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLogger {
-
+    /*********** 脚本中需要定义的方法  ************/
     private val URLFunction = "processUrl"
     private val ParseFunction = "parse"
     private val ResetFunction = "reset"
+    private val TrendChartFunction = "trendChart"
+
+    /********************************************/
+
     private val HttpMethod = "httpMethod"
 
     private var httpClient: CloseableHttpClient? = null
@@ -212,6 +217,24 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         super.update(symbols)
     }
 
+    override fun getTrendChart(symbol: String, type: QuotesService.TrendType): URL? {
+        for (entry in scriptEngines) {
+            try {
+                val engine = entry.value
+
+                val any = engine.castSafelyTo<Invocable>()
+                    ?.invokeFunction(TrendChartFunction, symbol, type)
+
+                if (any != null) {
+                    return URL(any.toString())
+                }
+
+            } catch (e: Exception) {
+                log.warn("get trend chart error $entry.key", e)
+            }
+        }
+        return null
+    }
 
     override fun close() {
         super.close()

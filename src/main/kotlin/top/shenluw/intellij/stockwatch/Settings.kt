@@ -92,6 +92,27 @@ class Settings : PersistentStateComponent<Settings> {
 
     var symbolNameCache: String? = null
 
+    /**
+     * 是否开始走势图
+     */
+    var enableTrendChart: Boolean = true
+
+    /**
+     * 点击statusBar获取趋势周期
+     */
+    var trendType: QuotesService.TrendType = QuotesService.TrendType.MINUTE
+
+    /**
+     * 点击statusBar弹窗宽度
+     */
+    var trendPopupWidth = 320
+
+    /**
+     * 点击statusBar弹窗高度
+     */
+    var trendPopupHeight = 150
+
+
     @Transient
     fun getRealSymbols(): MutableSet<String> {
         return symbols.filter { !TradingUtil.isIgnoreSymbol(it) }
