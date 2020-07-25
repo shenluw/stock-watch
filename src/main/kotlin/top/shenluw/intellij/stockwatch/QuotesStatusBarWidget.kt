@@ -59,7 +59,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     override fun install(statusBar: StatusBar) {
         this.project = statusBar.project
-        Disposer.register(statusBar.project!!, Images)
+        Disposer.register(Application!!, Images)
 
         symbols = Settings.instance.getRealSymbols()
 
