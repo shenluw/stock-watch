@@ -416,14 +416,14 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
     private fun createTigerDataSourceSetting(): TigerDataSourceSetting {
         return TigerDataSourceSetting(
             StringUtils.trimToNull(tigerIdTextField.text),
-            transformPrivateKey(privateKeyTextArea.text)
+            StringUtils.trimToNull(privateKeyTextArea.text)
         )
     }
 
     private fun createTigerPollDataSourceSetting(): TigerPollDataSourceSetting {
         return TigerPollDataSourceSetting(
             StringUtils.trimToNull(tigerIdTextField.text),
-            transformPrivateKey(privateKeyTextArea.text),
+            StringUtils.trimToNull(privateKeyTextArea.text),
             pollIntervalTextField.value as Long
         )
     }
@@ -463,24 +463,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         } catch (ignore: Exception) {
         }
         return set
-    }
-
-    private fun transformPrivateKey(text: String?): String? {
-        if (text.isNullOrBlank()) {
-            return null
-        }
-        var txt = text
-
-        val key = "KEY-----"
-        var index = txt.indexOf(key)
-        if (index >= 0) {
-            txt = txt.substring(index + key.length)
-        }
-        index = txt.indexOf("-----END")
-        if (index >= 0) {
-            txt = txt.substring(0, index)
-        }
-        return txt
     }
 
     private fun setColorButton(button: JButton, color: String) {
