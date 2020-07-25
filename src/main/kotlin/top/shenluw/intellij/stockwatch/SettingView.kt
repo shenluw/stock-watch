@@ -12,7 +12,6 @@ import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
-import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.ui.SettingUI
 import top.shenluw.intellij.stockwatch.utils.ColorUtil.getColor
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
@@ -59,7 +58,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
             private fun handler() {
                 val setting = createDataSourceSetting()
-                val builder = DialogBuilder(CurrentProject)
+                val builder = DialogBuilder(root)
                 builder.addOkAction()
                 if (!setting.isValid()) {
                     builder.title("error")
@@ -487,7 +486,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
 
         override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
-            ColorPicker.showColorPickerPopup(CurrentProject, getColor(colorButton.text), this)
+            ColorPicker.showColorPickerPopup(null, getColor(colorButton.text), this)
             return true
         }
 

@@ -21,7 +21,6 @@ import org.apache.commons.lang.text.StrLookup
 import org.apache.commons.lang.text.StrSubstitutor
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
-import top.shenluw.intellij.CurrentProject
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
 import top.shenluw.intellij.stockwatch.utils.Images
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
@@ -47,6 +46,8 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
 
     private var msgConn: MessageBusConnection? = null
 
+    private var project: Project? = null
+
     override fun ID(): String {
         return "QuotesStatusBarWidget"
     }
@@ -57,8 +58,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     override fun install(statusBar: StatusBar) {
-        CurrentProject = statusBar.project
-
+        this.project = statusBar.project
         Disposer.register(statusBar.project!!, Images)
 
         symbols = Settings.instance.getRealSymbols()
@@ -287,6 +287,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         msgConn?.disconnect()
         msgConn = null
         container = null
+        this.project = null
     }
 
     private fun registerItemClickListener(symbol: String, component: JComponent) {
@@ -297,7 +298,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
                     val url = downloadImage(symbol) ?: return@async
 
                     withContext(Dispatchers.Swing) {
-                        if (CurrentProject == null || CurrentProject!!.isDisposed) {
+                        if (project == null || project!!.isDisposed) {
                             return@withContext
                         }
                         val view = createImageView(url)

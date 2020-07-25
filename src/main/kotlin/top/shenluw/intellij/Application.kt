@@ -5,7 +5,6 @@ import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
 import top.shenluw.intellij.stockwatch.PLUGIN_ID
 
 /**
@@ -13,8 +12,6 @@ import top.shenluw.intellij.stockwatch.PLUGIN_ID
  * created: 2020/3/21 17:58
  */
 inline val Application get() = ApplicationManager.getApplication()
-
-var CurrentProject: Project? = null
 
 inline fun notifyMsg(
     title: String, msg: String,
