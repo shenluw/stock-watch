@@ -189,12 +189,13 @@ data class ScriptPollDataSourceSetting(
 ) : DataSourceSetting {
 
     override fun isValid(): Boolean {
-        if (!paths.isNullOrEmpty()) {
-            for (path in paths) {
-                val f = File(path)
-                if (!f.exists() || !f.isFile) {
-                    return false
-                }
+        if (paths.isNullOrEmpty()) {
+            return false
+        }
+        for (path in paths) {
+            val f = File(path)
+            if (!f.exists() || !f.isFile) {
+                return false
             }
         }
         return CollectionUtils.isSubCollection(actives ?: emptyList<String>(), paths)
