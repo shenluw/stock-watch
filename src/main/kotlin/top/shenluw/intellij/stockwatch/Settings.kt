@@ -112,6 +112,11 @@ class Settings : PersistentStateComponent<Settings> {
      */
     var trendPopupHeight = 150
 
+    /**
+     * 趋势图预览背景色
+     */
+    var trendPopupBackground: String = "#FFFFFF"
+
 
     @Transient
     fun getRealSymbols(): MutableSet<String> {

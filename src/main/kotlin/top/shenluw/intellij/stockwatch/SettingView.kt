@@ -177,7 +177,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         for (button in trendGroupMap.values) {
             group.add(button)
         }
-
+        setColorButton(trendPopupBackground, Settings.instance.trendPopupBackground)
+        ColorPickerHandler(trendPopupBackground)
     }
 
     override fun reset(settings: Settings) {
@@ -235,6 +236,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         trendWidth.text = settings.trendPopupWidth.toString()
         trendHeight.text = settings.trendPopupHeight.toString()
+        // 默认透明
+        trendPopupBackground.text = settings.trendPopupBackground
     }
 
     override fun isModified(settings: Settings): Boolean {
@@ -321,6 +324,10 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             return true
         }
 
+        if (settings.trendPopupBackground != trendPopupBackground.text) {
+            return true
+        }
+
         /* 脚本设置 */
 
         val saved = settings.scriptPollDataSourceSetting?.paths ?: emptyList()
@@ -365,16 +372,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.trendPopupWidth = trendWidth.text.toInt()
         settings.trendPopupHeight = trendHeight.text.toInt()
 
-        val quotesService = QuotesService.instance
-        runAsync {
-            if (settings.enabled) {
-                quotesService.start()
-                quotesService.updateSubscribe()
-            } else {
-                quotesService.close()
-            }
-        }
+        settings.trendPopupBackground = trendPopupBackground.text
 
+        // 数据源
         settings.interval = pollIntervalTextField.value as Long
         if (pollCheckBox.isSelected) {
             if (scriptRadioButton.isSelected) {
@@ -388,6 +388,16 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         settings.preAndAfterTrading = preAndAfterTradingCheckBox.isSelected
 
+        /* 启动/更新 */
+        val quotesService = QuotesService.instance
+        runAsync {
+            if (settings.enabled) {
+                quotesService.start()
+                quotesService.updateSubscribe()
+            } else {
+                quotesService.close()
+            }
+        }
         Application.messageBus.syncPublisher(QuotesTopic).settingChange()
     }
 

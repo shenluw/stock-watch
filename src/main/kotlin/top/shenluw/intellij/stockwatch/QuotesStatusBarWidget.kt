@@ -24,6 +24,7 @@ import top.shenluw.intellij.Application
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
 import top.shenluw.intellij.stockwatch.utils.Images
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.Point
 import java.awt.event.MouseEvent
@@ -301,13 +302,7 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
                         if (project == null || project!!.isDisposed) {
                             return@withContext
                         }
-                        val view = createImageView(url)
-                        val builder = JBPopupFactory.getInstance()
-                            .createComponentPopupBuilder(view, null)
-                        val popup = builder.createPopup()
-                        val dimension: Dimension = popup.content.preferredSize
-                        val at = Point(0, -dimension.height)
-                        popup.show(RelativePoint(event.component, at))
+                        showPopup(url, event.component)
                     }
                 }
                 return true
@@ -330,6 +325,22 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
         val label = JLabel("", ImageIcon(image), JLabel.CENTER)
         label.setSize(settings.trendPopupWidth, settings.trendPopupHeight)
         return label
+    }
+
+    private fun showPopup(url: URL, target: Component) {
+        val view = createImageView(url)
+        val builder = JBPopupFactory.getInstance()
+            .createComponentPopupBuilder(view, null)
+        val popup = builder.createPopup()
+
+        val settings = Settings.instance
+
+        ColorUtil.getColor(settings.trendPopupBackground)?.apply {
+            popup.content.background = this
+        }
+        val dimension: Dimension = popup.content.preferredSize
+        val at = Point(0, -dimension.height)
+        popup.show(RelativePoint(target, at))
     }
 }
 

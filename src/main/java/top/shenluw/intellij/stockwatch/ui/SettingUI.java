@@ -37,5 +37,6 @@ public class SettingUI {
     protected JRadioButton trendNoneRadioButton;
     protected JTextField trendWidth;
     protected JTextField trendHeight;
+    protected JButton trendPopupBackground;
 
 }
