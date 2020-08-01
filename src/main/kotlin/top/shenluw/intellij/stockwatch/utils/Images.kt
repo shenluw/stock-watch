@@ -31,10 +31,14 @@ object Images : Disposable, KLogger {
 
     private val scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
-    suspend fun downloadImage(url: URL): URL? {
+    fun downloadImage(url: URL): URL? {
         val client = this.client ?: return null
 
-        val file = File.createTempFile("stock_", "img")
+        val file = try {
+            File.createTempFile("stock_", "img")
+        } catch (e: Exception) {
+            return null
+        }
         val path = file.absolutePath
         imgFiles.add(path)
 
@@ -51,7 +55,11 @@ object Images : Disposable, KLogger {
             .build()
 
         httpGet.config = config
-        val response = client.execute(httpGet)
+        val response = try {
+            client.execute(httpGet)
+        } catch (e: Exception) {
+            return null
+        }
         if (response.statusLine.statusCode / 100 == 2) {
             try {
                 response.entity.writeTo(FileOutputStream(file))
