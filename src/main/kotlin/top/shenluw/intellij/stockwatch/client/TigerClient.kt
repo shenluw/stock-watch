@@ -45,7 +45,7 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
 
         if (socketClient == null) {
             val auth = ApiAuthentication.build(dataSourceSetting.tigerId, dataSourceSetting.privateKey)
-            socketClient = WebSocketClient(WSS_API_ADDRESS, auth, this)
+            socketClient = WebSocketClient(TIGER_WSS_API_ADDRESS, auth, this)
             socketClient?.connect()
             if (!this.symbols.isNullOrEmpty()) {
                 subscribeQuote(symbols)

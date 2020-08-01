@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.concurrency.runAsync
 import top.shenluw.intellij.Application
+import top.shenluw.intellij.stockwatch.client.TIGER_HELP_LINK
 import top.shenluw.intellij.stockwatch.ui.SettingUI
 import top.shenluw.intellij.stockwatch.utils.ColorUtil.getColor
 import top.shenluw.intellij.stockwatch.utils.TradingUtil

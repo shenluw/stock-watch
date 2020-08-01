@@ -21,6 +21,10 @@ import java.security.Security
  * @author Shenluw
  * created: 2020/4/11 14:59
  */
+const val TIGER_WSS_API_ADDRESS = "wss://openapi.itiger.com:8887/stomp"
+const val TIGER_HTTP_API_ADDRESS = "https://openapi.itiger.com/gateway"
+const val TIGER_HELP_LINK = "https://quant.itiger.com/openapi/java-docs/zh-cn/docs/intro/quickstart.html"
+
 interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogger {
     private companion object {
         init {
@@ -61,7 +65,7 @@ interface ITigerClient<T : ITigerDataSourceSetting> : DataSourceClient<T>, KLogg
     }
 
     fun createApiClient(setting: ITigerDataSourceSetting): TigerHttpClient {
-        return TigerHttpClient(HTTP_API_ADDRESS, setting.tigerId, setting.privateKey)
+        return TigerHttpClient(TIGER_HTTP_API_ADDRESS, setting.tigerId, setting.privateKey)
     }
 
     fun findSymbolName(symbol: String): SymbolNameItem? {
