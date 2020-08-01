@@ -6,7 +6,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.CustomStatusBarWidget
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.StatusBarWidgetProvider
+import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.ui.ClickListener
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.messages.MessageBusConnection
@@ -39,15 +39,13 @@ import javax.swing.JPanel
  * @author Shenluw
  * created: 2020/3/22 20:59
  */
-class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListener {
+class QuotesStatusBarWidget(var project: Project?) : CustomStatusBarWidget, QuotesService.QuotesListener {
 
     private var container: JPanel? = null
     private val stocks = hashMapOf<String, JLabel>()
     private var symbols = emptySet<String>()
 
     private var msgConn: MessageBusConnection? = null
-
-    private var project: Project? = null
 
     override fun ID(): String {
         return "QuotesStatusBarWidget"
@@ -59,7 +57,6 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 
     override fun install(statusBar: StatusBar) {
-        this.project = statusBar.project
         Disposer.register(Application!!, Images)
 
         symbols = Settings.instance.getRealSymbols()
@@ -344,13 +341,28 @@ class QuotesStatusBarWidget : CustomStatusBarWidget, QuotesService.QuotesListene
     }
 }
 
-
-class QuotesStatusBarWidgetProvider : StatusBarWidgetProvider {
-    override fun getWidget(project: Project): StatusBarWidget? {
-        return QuotesStatusBarWidget()
+class QuotesStatusBarWidgetFactory : StatusBarWidgetFactory {
+    override fun getId(): String {
+        return "QuotesStatusBarWidget"
     }
 
-    override fun getAnchor(): String {
-        return StatusBar.Anchors.before(StatusBar.StandardWidgets.POSITION_PANEL)
+    override fun getDisplayName(): String {
+        return PLUGIN_NAME
+    }
+
+    override fun disposeWidget(widget: StatusBarWidget) {
+        Disposer.dispose(widget)
+    }
+
+    override fun isAvailable(project: Project): Boolean {
+        return true
+    }
+
+    override fun createWidget(project: Project): StatusBarWidget {
+        return QuotesStatusBarWidget(project)
+    }
+
+    override fun canBeEnabledOn(statusBar: StatusBar): Boolean {
+        return true
     }
 }

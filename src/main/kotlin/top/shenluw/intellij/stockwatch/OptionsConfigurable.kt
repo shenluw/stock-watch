@@ -1,17 +1,26 @@
 package top.shenluw.intellij.stockwatch
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.extensions.BaseExtensionPointName
+import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurableUi
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.annotations.Nls
+import java.util.*
 import javax.swing.JComponent
 
 /**
  * @author shenlw
  * @date 2020/3/29 15:30
  */
-class OptionsConfigurable : MyConfigurableBase<SettingView, Settings>(PLUGIN_ID, PLUGIN_NAME, null) {
+class OptionsConfigurable : MyConfigurableBase<SettingView, Settings>(PLUGIN_ID, PLUGIN_NAME, null),
+    Configurable.WithEpDependencies {
+
+    override fun getDependencies(): MutableCollection<BaseExtensionPointName<*>> {
+        return Collections.emptyList()
+    }
+
     override fun getSettings(): Settings {
         return Settings.instance
     }

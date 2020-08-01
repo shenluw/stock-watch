@@ -8,7 +8,7 @@ plugins {
 
 
 group = "top.shenluw.intellij"
-version = "0.1.6"
+version = "0.1.7"
 
 repositories {
     mavenCentral()
@@ -30,13 +30,13 @@ dependencies {
 sourceCompatibility = 1.8
 
 intellij {
-    version  "2019.3.4"
+    version  "2020.1"
     pluginName  'stock-watch'
 }
 
 patchPluginXml {
-    sinceBuild "193.1546.*"
-    untilBuild '201.*'
+    sinceBuild "201.6668.121"
+    untilBuild '202.*'
 }
 
 publishPlugin{
