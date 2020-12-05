@@ -206,8 +206,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         displayFormatTextField.text = settings.pattern
 
-        onlyCloseUICheckBox.isSelected = settings.onlyCloseUI
-
         setColorButton(fallColorBtn, settings.fallColor)
         setColorButton(riseColorBtn, settings.riseColor)
 
@@ -243,9 +241,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
     override fun isModified(settings: Settings): Boolean {
         if (settings.enabled != toggleCheckBox.isSelected) {
-            return true
-        }
-        if (settings.onlyCloseUI != onlyCloseUICheckBox.isSelected) {
             return true
         }
 
@@ -347,7 +342,6 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         log.debug("apply")
 
         settings.enabled = toggleCheckBox.isSelected
-        settings.onlyCloseUI = onlyCloseUICheckBox.isSelected
         val text = symbolTextArea.text
         settings.symbols = transform(text)
         settings.tigerDataSourceSetting = createTigerDataSourceSetting()
