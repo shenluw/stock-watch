@@ -30,6 +30,8 @@
       </ul>
     ]]></change-notes>
 
+    <depends>com.intellij.modules.lang</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="top.shenluw.intellij.stockwatch.Settings"/>
         <applicationService serviceInterface="top.shenluw.intellij.stockwatch.QuotesService"
