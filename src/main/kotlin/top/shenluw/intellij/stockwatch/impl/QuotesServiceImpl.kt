@@ -10,6 +10,7 @@ import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.client.ScriptPollClient
 import top.shenluw.intellij.stockwatch.client.TigerClient
 import top.shenluw.intellij.stockwatch.client.TigerPollClient
+import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.net.URL
 
 /**
@@ -35,7 +36,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
         if (!src.isValid()) {
             return
         }
-        val symbols = Settings.instance.getRealSymbols()
+        val symbols = TradingUtil.filterSymbols(Settings.instance.symbols)
 
         try {
             if (dataSourceClient != null) {
@@ -58,7 +59,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun updateSubscribe() {
-        val symbols = Settings.instance.getRealSymbols()
+        val symbols = TradingUtil.filterSymbols(Settings.instance.symbols)
 
         dataSourceClient?.update(symbols)
         Application.messageBus.syncPublisher(QuotesTopic).symbolChange(symbols)

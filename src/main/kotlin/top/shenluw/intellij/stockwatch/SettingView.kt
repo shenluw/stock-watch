@@ -80,9 +80,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
                 client.testConfig(
                     setting,
-                    transform(symbolTextArea.text)
-                        .filter { !TradingUtil.isIgnoreSymbol(it) }.toHashSet()
-                )
+                    TradingUtil.filterSymbols(transform(symbolTextArea.text)
+                        .filter { !TradingUtil.isIgnoreSymbol(it) }
+                        .toSet()))
                     .onSuccess {
                         UIUtil.invokeAndWaitIfNeeded(Runnable {
                             testConnectBtn.isEnabled = true

@@ -59,7 +59,7 @@ class QuotesStatusBarWidget(var project: Project?) : CustomStatusBarWidget, Quot
     override fun install(statusBar: StatusBar) {
         Disposer.register(Application!!, Images)
 
-        symbols = Settings.instance.getRealSymbols()
+        symbols = TradingUtil.filterSymbols(Settings.instance.symbols)
 
         QuotesService.instance.init()
 
@@ -145,7 +145,7 @@ class QuotesStatusBarWidget(var project: Project?) : CustomStatusBarWidget, Quot
     override fun settingChange() {
         val settings = Settings.instance
 
-        symbolChange(settings.getRealSymbols())
+        symbolChange(TradingUtil.filterSymbols(settings.symbols))
 
         val client = QuotesService.instance.getDataSourceClient()
         stocks.forEach { (symbol, _) ->

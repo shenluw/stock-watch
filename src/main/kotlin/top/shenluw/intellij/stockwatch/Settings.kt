@@ -8,7 +8,6 @@ import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
 import org.apache.commons.collections.CollectionUtils
-import top.shenluw.intellij.stockwatch.utils.TradingUtil
 import java.awt.Color
 import java.io.File
 
@@ -111,17 +110,6 @@ class Settings : PersistentStateComponent<Settings> {
      * 趋势图预览背景色
      */
     var trendPopupBackground: String = "#FFFFFF"
-
-
-    @Transient
-    fun getRealSymbols(): MutableSet<String> {
-        return symbols.filter { !TradingUtil.isIgnoreSymbol(it) }
-            .flatMap { it.split(",") }
-            .filter { it.isNotBlank() }
-            .map { it.trim() }
-            .filter { !TradingUtil.isIgnoreSymbol(it) }
-            .toHashSet()
-    }
 
     override fun getState(): Settings? = this
 

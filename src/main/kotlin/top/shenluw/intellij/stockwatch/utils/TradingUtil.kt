@@ -69,5 +69,13 @@ object TradingUtil {
         return symbol.isBlank() || symbol[0] == '#'
     }
 
+    fun filterSymbols(symbols: Set<String>): MutableSet<String> {
+        return symbols.flatMap { it.split(",") }
+            .filter { it.isNotBlank() }
+            .map { it.trim() }
+            .filter { !isIgnoreSymbol(it) }
+            .toHashSet()
+    }
+
 }
 
