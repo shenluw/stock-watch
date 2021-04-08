@@ -70,11 +70,12 @@ object TradingUtil {
     }
 
     fun filterSymbols(symbols: Set<String>): MutableSet<String> {
-        return symbols.flatMap { it.split(",") }
-            .filter { it.isNotBlank() }
-            .map { it.trim() }
-            .filter { !isIgnoreSymbol(it) }
-            .toHashSet()
+        return symbols.filter { !isIgnoreSymbol(it) }
+                .flatMap { it.split(",") }
+                .filter { it.isNotBlank() }
+                .map { it.trim() }
+                .filter { !isIgnoreSymbol(it) }
+                .toHashSet()
     }
 
 }

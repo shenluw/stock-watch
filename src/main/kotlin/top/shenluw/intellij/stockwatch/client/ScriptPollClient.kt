@@ -43,8 +43,6 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
 
     private var scriptEngines = hashMapOf<String, ScriptEngine>()
 
-    private var symbolList: List<String>? = null
-
     private fun processUrl(engine: ScriptEngine, symbols: List<String>): String? {
         val any = engine.castSafelyTo<Invocable>()
             ?.invokeFunction(URLFunction, symbols)
@@ -53,7 +51,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
 
     private fun parse(text: String, engine: ScriptEngine): List<StockInfo> {
         if (engine is Invocable) {
-            val ret = engine.invokeFunction(ParseFunction, text, symbolList)
+            val ret = engine.invokeFunction(ParseFunction, text, symbols)
             if (ret is String) {
                 return JSON.parseArray(ret)
                     .map {
@@ -80,10 +78,10 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
     }
 
     override fun fetch(): List<StockInfo> {
-        return if (this.symbolList.isNullOrEmpty()) {
+        return if (this.symbols.isNullOrEmpty()) {
             emptyList()
         } else {
-            val symbols = this.symbolList!!
+            val symbols = this.symbols!!
             val ret = arrayListOf<StockInfo>()
 
             scriptEngines.forEach { (path, engine) ->
@@ -138,8 +136,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
 
         interval = dataSourceSetting.interval
 
-        this.symbols = symbols
-        this.symbolList = symbols.toList()
+        this.symbols = symbols.toList()
 
         scriptEngines.clear()
 
@@ -213,7 +210,6 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
             u.get("console").castSafelyTo<FileLogger>()
                 ?.writeable = Settings.instance.enableScriptLog
         }
-        this.symbolList = symbols.toList()
         super.update(symbols)
     }
 

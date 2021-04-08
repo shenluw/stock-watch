@@ -65,7 +65,7 @@ class TigerPollClient : AbstractPollClient<TigerPollDataSourceSetting>(), ITiger
 
         interval = dataSourceSetting.interval
 
-        this.symbols = symbols
+        this.symbols = symbols.toList()
         updateSymbolNames(dataSourceSetting)
 
         tigerApiClient = createApiClient(dataSourceSetting)

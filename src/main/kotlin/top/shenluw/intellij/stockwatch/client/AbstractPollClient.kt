@@ -22,7 +22,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
     /* 轮询间隔 */
     var interval: Long = 10_000
 
-    protected var symbols: MutableSet<String>? = null
+    protected var symbols: List<String>? = null
 
     private var scheduledService: ScheduledExecutorService? = null
 
@@ -56,7 +56,7 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
         if (CollectionUtils.isEqualCollection(this.symbols, symbols)) {
             return
         }
-        this.symbols = symbols
+        this.symbols = symbols.toList()
 
         close()
         startPoll()
