@@ -27,7 +27,16 @@ object Images : Disposable, KLogger {
 
     private val imgFiles = arrayListOf<String>()
 
-    private var client: CloseableHttpClient? = HttpClients.createMinimal()
+    private var client: CloseableHttpClient? = HttpClients
+        .custom()
+        .disableAutomaticRetries()
+        .setDefaultRequestConfig(
+            RequestConfig.custom()
+                .setConnectTimeout(15_000)
+                .setSocketTimeout(15_000)
+                .build()
+        )
+        .build()
 
     private val scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
@@ -48,15 +57,8 @@ object Images : Disposable, KLogger {
             FileUtils.deleteQuietly(File(path))
         }, CACHE_FILE_EXPIRE, TimeUnit.MILLISECONDS)
 
-        val httpGet = HttpGet(url.toURI())
-        val config = RequestConfig.custom()
-            .setConnectTimeout(15_000)
-            .setSocketTimeout(15_000)
-            .build()
-
-        httpGet.config = config
         val response = try {
-            client.execute(httpGet)
+            client.execute(HttpGet(url.toURI()))
         } catch (e: Exception) {
             return null
         }
