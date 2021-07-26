@@ -154,7 +154,6 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
 
         httpClient = HttpClients.createSystem()
         startPoll()
-        HttpClients.createDefault()
     }
 
     override fun testConfig(
