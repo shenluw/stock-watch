@@ -1,7 +1,7 @@
 package top.shenluw.intellij.stockwatch.utils
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.util.io.FileUtil
+import org.apache.commons.io.FileUtils
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.utils.HttpClientUtils
@@ -45,7 +45,7 @@ object Images : Disposable, KLogger {
         // 清理
         scheduledExecutorService.schedule({
             imgFiles.remove(path)
-            FileUtil.delete(File(path))
+            FileUtils.deleteQuietly(File(path))
         }, CACHE_FILE_EXPIRE, TimeUnit.MILLISECONDS)
 
         val httpGet = HttpGet(url.toURI())
@@ -76,7 +76,7 @@ object Images : Disposable, KLogger {
         client = null
 
         imgFiles.forEach {
-            FileUtil.delete(File(it))
+            FileUtils.deleteQuietly(File(it))
         }
         imgFiles.clear()
         scheduledExecutorService.shutdownNow()
