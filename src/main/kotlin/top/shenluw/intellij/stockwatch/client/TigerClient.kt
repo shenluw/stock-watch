@@ -136,10 +136,6 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
         log.debug("error: ", id, errorCode, errorMsg)
     }
 
-    override fun askBidChange(jsonObject: JSONObject?) {
-        log.debug("askBidChange: ", jsonObject)
-    }
-
     override fun quoteChange(jsonObject: JSONObject?) {
         log.debug("quoteChange: ", jsonObject)
 
@@ -205,6 +201,12 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
     override fun getSubscribedSymbolEnd(subscribedSymbol: SubscribedSymbol?) {
         if (log.isDebugEnabled) {
             log.debug("getSubscribedSymbolEnd: ", JSON.toJSON(subscribedSymbol))
+        }
+    }
+
+    override fun depthQuoteChange(jsonObject: JSONObject?) {
+        if (log.isDebugEnabled) {
+            log.debug("getSubscribedSymbolEnd: ", JSON.toJSON(jsonObject))
         }
     }
 }
