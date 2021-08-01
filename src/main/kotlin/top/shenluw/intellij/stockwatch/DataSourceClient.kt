@@ -23,6 +23,13 @@ interface DataSourceClient<T : DataSourceSetting> {
     fun getStockInfo(symbol: String): StockInfo?
 
     /**
+     * 根据关键字搜索股票信息
+     */
+    fun searchStockSummary(keyword: String): List<StockSummary> {
+        return emptyList()
+    }
+
+    /**
      * 获取趋势图 图像地址
      * @return 如果返回值为null， 表示不支持获取
      */

@@ -32,6 +32,8 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
     private val ParseFunction = "parse"
     private val ResetFunction = "reset"
     private val TrendChartFunction = "trendChart"
+    private val SearchUrlFunction = "searchUrl"
+    private val SearchParseFunction = "searchParse"
 
     /********************************************/
 
@@ -49,7 +51,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         return any?.toString()
     }
 
-    private fun parse(text: String, engine: ScriptEngine): List<StockInfo> {
+    private fun parseStockInfo(text: String, engine: ScriptEngine): List<StockInfo> {
         if (engine is Invocable) {
             val ret = engine.invokeFunction(ParseFunction, text, symbols)
             if (ret is String) {
@@ -124,7 +126,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         val response = httpClient.execute(request)
         if (response != null && response.statusLine.statusCode / 100 == 2) {
             val resp = EntityUtils.toString(response.entity)
-            return parse(resp, engine)
+            return parseStockInfo(resp, engine)
         }
         return emptyList()
     }
@@ -165,7 +167,7 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         }
 
         dataSourceSetting.actives.forEach {
-            if (symbols.isNullOrEmpty()) {
+            if (symbols.isEmpty()) {
                 return resolvedPromise(ClientResponse(ResultCode.SYMBOL_EMPTY, "symbol is empty"))
             }
 
@@ -212,11 +214,53 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         super.update(symbols)
     }
 
+    override fun searchStockSummary(keyword: String): List<StockSummary> {
+        val total = mutableListOf<StockSummary>()
+        scriptEngines.forEach {
+            val engine = it.value
+
+            try {
+                val url = engine.castSafelyTo<Invocable>()?.invokeFunction(SearchUrlFunction, keyword)?.toString()
+                    ?: throw ClientException("Script fail")
+                httpClient?.let { client ->
+                    val response = client.execute(HttpGet(url))
+                    if (response != null && response.statusLine.statusCode / 100 == 2) {
+                        val resp = EntityUtils.toString(response.entity)
+                        val summaries = parseSummary(resp, engine)
+                        if (summaries.isNotEmpty()) {
+                            total.addAll(summaries)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                log.warn("search stock error. ${it.key}", e)
+            }
+        }
+        return total
+    }
+
+    private fun parseSummary(resp: String, engine: ScriptEngine): List<StockSummary> {
+        val ret = engine.castSafelyTo<Invocable>()
+            ?.invokeFunction(SearchParseFunction, resp)
+        if (ret is String) {
+            return JSON.parseArray(ret)
+                .map {
+                    return@map it.castSafelyTo<JSONObject>()
+                        ?.let { obj ->
+                            StockSummary(
+                                obj.getString("name"),
+                                obj.getString("symbol")
+                            )
+                        }
+                }.filterNotNull()
+        }
+        return emptyList()
+    }
+
     override fun getTrendChart(symbol: String, type: QuotesService.TrendType): URL? {
         for (entry in scriptEngines) {
+            val engine = entry.value
             try {
-                val engine = entry.value
-
                 val any = engine.castSafelyTo<Invocable>()
                     ?.invokeFunction(TrendChartFunction, symbol, type)
 
