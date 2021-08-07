@@ -8,6 +8,7 @@ import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
 import org.apache.commons.collections.CollectionUtils
+import top.shenluw.intellij.Application
 import java.awt.Color
 import java.io.File
 
@@ -107,7 +108,7 @@ class Settings : PersistentStateComponent<Settings> {
      */
     var trendPopupBackground: String = "#FFFFFF"
 
-    override fun getState(): Settings? = this
+    override fun getState(): Settings = this
 
     override fun loadState(state: Settings) {
         XmlSerializerUtil.copyBean(state, this)
@@ -115,7 +116,7 @@ class Settings : PersistentStateComponent<Settings> {
 
     companion object {
         val instance: Settings
-            get() = ServiceManager.getService(Settings::class.java)
+            get() = Application.getService(Settings::class.java)
     }
 }
 

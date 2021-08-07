@@ -1,9 +1,15 @@
 package top.shenluw.intellij.stockwatch.dialog
 
+import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.components.JBLabel
+import com.intellij.util.xmlb.XmlSerializerUtil
+import top.shenluw.intellij.Application
 import top.shenluw.intellij.notifyMsg
 import top.shenluw.intellij.stockwatch.*
 import top.shenluw.intellij.stockwatch.ui.HintListener
@@ -29,6 +35,8 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
 
     private var dataSourceClient: DataSourceClient<DataSourceSetting>? = null
 
+    private var uiSetting = SearchUISetting.instance
+
     init {
         initTrendUI()
 
@@ -53,6 +61,17 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
         }.installOn(resultList)
 
         initSearchUI()
+
+        val x = uiSetting.x
+        val y = uiSetting.y
+        if (x != null && y != null) {
+            setLocation(x, y)
+        }
+        val w = uiSetting.w
+        val h = uiSetting.h
+        if (w != null && h != null) {
+            setSize(w, h)
+        }
     }
 
     private fun initSearchUI() {
@@ -77,12 +96,19 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
 
         val group = ButtonGroup()
 
-        trendGroupMap.keys.forEach {
-            group.add(it)
-            it.addItemListener { v ->
+        trendGroupMap.forEach { (u, t) ->
+            group.add(u)
+            u.addItemListener { v ->
                 if (v.stateChange == ItemEvent.SELECTED) {
                     showPreview()
+                    uiSetting.trendType = t
                 }
+            }
+        }
+        val trendType = uiSetting.trendType
+        trendGroupMap.forEach { (u, t) ->
+            if (t == trendType) {
+                u.isSelected = true
             }
         }
 
@@ -92,7 +118,7 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
      * 展示趋势图
      */
     private fun showPreview() {
-        val value = resultList.selectedValue
+        val value = resultList.selectedValue ?: return
         var type: QuotesService.TrendType = QuotesService.TrendType.MINUTE
         trendGroupMap.forEach { (u, t) -> if (u.isSelected) type = t }
         // NOTE: 2021/8/7 解决框每次变更都变大问题 -24
@@ -146,5 +172,32 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
             dataSourceClient?.close()
             dataSourceClient = null
         }
+        val uiSetting = SearchUISetting.instance
+        uiSetting.x = location.x
+        uiSetting.y = location.y
+        uiSetting.w = size.width
+        uiSetting.h = size.height
+    }
+
+    @State(name = "StockWatchSearchUISetting", storages = [Storage(StoragePathMacros.CACHE_FILE)])
+    class SearchUISetting : PersistentStateComponent<SearchUISetting> {
+        var x: Int? = null
+        var y: Int? = null
+        var w: Int? = null
+        var h: Int? = null
+        var trendType: QuotesService.TrendType = QuotesService.TrendType.MINUTE
+
+        override fun getState(): SearchUISetting = this
+
+        override fun loadState(state: SearchUISetting) {
+            XmlSerializerUtil.copyBean(state, this)
+        }
+
+        companion object {
+            val instance: SearchUISetting
+                get() = Application.getService(SearchUISetting::class.java)
+        }
+
+
     }
 }

@@ -34,6 +34,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="top.shenluw.intellij.stockwatch.Settings"/>
+        <applicationService
+                serviceImplementation="top.shenluw.intellij.stockwatch.dialog.SearchStockDialog$SearchUISetting"/>
         <applicationService serviceInterface="top.shenluw.intellij.stockwatch.QuotesService"
                             serviceImplementation="top.shenluw.intellij.stockwatch.impl.QuotesServiceImpl"/>
 

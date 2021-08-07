@@ -1,6 +1,6 @@
 package top.shenluw.intellij.stockwatch
 
-import com.intellij.openapi.components.ServiceManager
+import top.shenluw.intellij.Application
 import java.net.URL
 
 /**
@@ -10,7 +10,7 @@ import java.net.URL
 interface QuotesService {
     companion object {
         val instance: QuotesService
-            get() = ServiceManager.getService(QuotesService::class.java)
+            get() = Application.getService(QuotesService::class.java)
     }
 
     fun init()
