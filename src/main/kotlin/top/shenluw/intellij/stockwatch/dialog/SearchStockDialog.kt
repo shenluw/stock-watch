@@ -68,7 +68,7 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
             setLocation(x, y)
         }
         val w = uiSetting.w
-        val h = uiSetting.h
+        val h = size?.height
         if (w != null && h != null) {
             setSize(w, h)
         }
@@ -179,7 +179,6 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
         uiSetting.x = location.x
         uiSetting.y = location.y
         uiSetting.w = size.width
-        uiSetting.h = size.height
     }
 
     @State(name = "StockWatchSearchUISetting", storages = [Storage(StoragePathMacros.CACHE_FILE)])
@@ -187,7 +186,6 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
         var x: Int? = null
         var y: Int? = null
         var w: Int? = null
-        var h: Int? = null
         var trendType: QuotesService.TrendType = QuotesService.TrendType.MINUTE
 
         override fun getState(): SearchUISetting = this
