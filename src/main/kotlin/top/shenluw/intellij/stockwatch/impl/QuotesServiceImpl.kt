@@ -32,7 +32,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
 
     @Synchronized
     override fun start() {
-        val src = getDataSourceSetting() ?: return
+        val src = getActiveDataSourceSetting() ?: return
         if (!src.isValid()) {
             return
         }
@@ -72,7 +72,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
         Application.messageBus.syncPublisher(QuotesTopic).toggle(false)
     }
 
-    private fun getDataSourceSetting(): DataSourceSetting? {
+    override fun getActiveDataSourceSetting(): DataSourceSetting? {
         val sourceId = Settings.instance.useDataSourceId
 
         if (sourceId == ScriptPollDataSourceSetting::class.simpleName) {

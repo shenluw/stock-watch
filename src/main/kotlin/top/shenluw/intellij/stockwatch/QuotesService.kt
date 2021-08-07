@@ -44,6 +44,11 @@ interface QuotesService {
     fun getDataSourceClient(): DataSourceClient<DataSourceSetting>?
 
     /**
+     * 获取设置选择的数据源配置
+     */
+    fun getActiveDataSourceSetting(): DataSourceSetting?
+
+    /**
      * 获取趋势图 图像地址
      * @return 如果返回值为null， 表示不支持获取
      */

@@ -48,5 +48,10 @@
                 text="Toggle Quotes StatusBar">
             <keyboard-shortcut keymap="$default" first-keystroke="alt Z"/>
         </action>
+        <action id="SearchSymbolBarAction"
+                class="top.shenluw.intellij.stockwatch.action.SearchSymbolBarAction"
+                text="Search Symbol StatusBar">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt S"/>
+        </action>
     </actions>
 </idea-plugin>

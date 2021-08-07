@@ -18,9 +18,9 @@ inline fun notifyMsg(
     type: NotificationType = NotificationType.INFORMATION,
     listener: NotificationListener? = null
 ) {
-    Notifications.Bus.notify(
-        Notification(PLUGIN_ID, title, msg, type, listener)
-    )
+    val notification = Notification(PLUGIN_ID, title, msg, type)
+    listener?.apply { notification.setListener(this) }
+    Notifications.Bus.notify(notification)
 }
 
 inline fun invokeLater(crossinline block: () -> Unit) {
