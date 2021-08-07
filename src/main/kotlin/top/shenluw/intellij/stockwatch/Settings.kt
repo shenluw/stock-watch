@@ -87,12 +87,8 @@ class Settings : PersistentStateComponent<Settings> {
     var symbolNameCache: String? = null
 
     /**
-     * 是否开始走势图
-     */
-    var enableTrendChart: Boolean = true
-
-    /**
      * 点击statusBar获取趋势周期
+     * NONE表示不开启
      */
     var trendType: QuotesService.TrendType = QuotesService.TrendType.MINUTE
 

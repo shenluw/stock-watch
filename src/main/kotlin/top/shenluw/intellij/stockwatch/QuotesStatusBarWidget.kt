@@ -309,11 +309,11 @@ class QuotesStatusBarWidget(var project: Project?) : CustomStatusBarWidget, Quot
 
     private suspend fun downloadImage(symbol: String): URL? {
         val settings = Settings.instance
-        if (!settings.enableTrendChart) {
+        if (settings.trendType == QuotesService.TrendType.NONE) {
             return null
         }
-        val url: URL? = QuotesService.instance.getTrendChart(symbol, Settings.instance.trendType) ?: return null
-        return Images.downloadImage(url!!)
+        val url: URL = QuotesService.instance.getTrendChart(symbol, Settings.instance.trendType) ?: return null
+        return Images.downloadImage(url)
     }
 
     private fun createImageView(url: URL): JComponent {

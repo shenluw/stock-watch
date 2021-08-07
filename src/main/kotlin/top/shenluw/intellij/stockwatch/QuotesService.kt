@@ -50,6 +50,8 @@ interface QuotesService {
     fun getTrendChart(symbol: String, type: TrendType): URL?
 
     enum class TrendType {
+        /* 无趋势 */
+        NONE,
 
         /* 分钟级别 相当于实时 */
         MINUTE,

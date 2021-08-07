@@ -36,7 +36,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
     /**
      *  枚举和ui映射关系
      */
-    private val trendGroupMap = hashMapOf<String, JRadioButton>()
+    private val trendGroupMap = hashMapOf<QuotesService.TrendType, JRadioButton>()
 
     init {
         helpLinkLabel.setHyperlinkTarget(TIGER_HELP_LINK)
@@ -168,16 +168,14 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
     }
 
     private fun initTrendChart() {
-        trendGroupMap["NONE"] = trendNoneRadioButton
-        trendGroupMap[QuotesService.TrendType.MINUTE.name] = trendMinuteRadioButton
-        trendGroupMap[QuotesService.TrendType.DAILY.name] = trendDailyRadioButton
-        trendGroupMap[QuotesService.TrendType.WEEKLY.name] = trendWeeklyRadioButton
-        trendGroupMap[QuotesService.TrendType.MONTHLY.name] = trendMonthlyRadioButton
+        trendGroupMap[QuotesService.TrendType.NONE] = trendNoneRadioButton
+        trendGroupMap[QuotesService.TrendType.MINUTE] = trendMinuteRadioButton
+        trendGroupMap[QuotesService.TrendType.DAILY] = trendDailyRadioButton
+        trendGroupMap[QuotesService.TrendType.WEEKLY] = trendWeeklyRadioButton
+        trendGroupMap[QuotesService.TrendType.MONTHLY] = trendMonthlyRadioButton
 
         val group = ButtonGroup()
-        for (button in trendGroupMap.values) {
-            group.add(button)
-        }
+        trendGroupMap.values.forEach { group.add(it) }
         setColorButton(trendPopupBackground, Settings.instance.trendPopupBackground)
         ColorPickerHandler(trendPopupBackground)
     }
@@ -227,11 +225,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
 
         /* 趋势图 */
-        if (settings.enableTrendChart) {
-            trendGroupMap[settings.trendType.name]?.isSelected = true
-        } else {
-            trendNoneRadioButton.isSelected = true
-        }
+        trendGroupMap[settings.trendType]?.isSelected = true
 
         trendWidth.text = settings.trendPopupWidth.toString()
         trendHeight.text = settings.trendPopupHeight.toString()
@@ -301,15 +295,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
         /* 趋势图设置 */
         trendGroupMap.forEach { (type, ui) ->
-            if (ui.isSelected) {
-                try {
-                    if (QuotesService.TrendType.valueOf(type) != settings.trendType || !settings.enableTrendChart) {
-                        return true
-                    }
-                } catch (e: Exception) {
-                    // 表示选中了none
-                    return ui != trendNoneRadioButton
-                }
+            if (ui.isSelected && type != settings.trendType) {
+                return true
             }
         }
 
@@ -355,12 +342,9 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         settings.enableScriptLog = scriptLogCheckBox.isSelected
 
         /* 趋势图设置 */
-        settings.enableTrendChart = !trendNoneRadioButton.isSelected
         trendGroupMap.forEach {
             if (it.value.isSelected) {
-                if (settings.enableTrendChart) {
-                    settings.trendType = QuotesService.TrendType.valueOf(it.key)
-                }
+                settings.trendType = it.key
             }
         }
 
