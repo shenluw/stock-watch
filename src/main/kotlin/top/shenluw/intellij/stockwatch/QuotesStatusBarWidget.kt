@@ -11,12 +11,6 @@ import com.intellij.ui.ClickListener
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.text.DateFormatUtil
-import com.intellij.util.ui.ImageUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.swing.Swing
-import kotlinx.coroutines.withContext
 import org.apache.commons.lang.text.StrLookup
 import org.apache.commons.lang.text.StrSubstitutor
 import org.jetbrains.concurrency.runAsync
@@ -24,13 +18,12 @@ import top.shenluw.intellij.Application
 import top.shenluw.intellij.stockwatch.utils.ColorUtil
 import top.shenluw.intellij.stockwatch.utils.Images
 import top.shenluw.intellij.stockwatch.utils.TradingUtil
+import top.shenluw.intellij.stockwatch.utils.TrendImages
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Point
 import java.awt.event.MouseEvent
-import java.net.URL
 import java.text.DecimalFormat
-import javax.swing.ImageIcon
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -292,42 +285,25 @@ class QuotesStatusBarWidget(var project: Project?) : CustomStatusBarWidget, Quot
 
         object : ClickListener() {
             override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
-                GlobalScope.async {
-                    val url = downloadImage(symbol) ?: return@async
+                val settings = Settings.instance
 
-                    withContext(Dispatchers.Swing) {
-                        if (project == null || project!!.isDisposed) {
-                            return@withContext
-                        }
-                        showPopup(url, event.component)
-                    }
+                TrendImages.createTrendImage(
+                    symbol,
+                    settings.trendType,
+                    settings.trendPopupWidth,
+                    settings.trendPopupHeight,
+                    project
+                ) {
+                    showPopup(TrendImages.createImageView(it), event.component)
                 }
                 return true
             }
         }.installOn(component)
     }
 
-    private suspend fun downloadImage(symbol: String): URL? {
-        val settings = Settings.instance
-        if (settings.trendType == QuotesService.TrendType.NONE) {
-            return null
-        }
-        val url: URL = QuotesService.instance.getTrendChart(symbol, Settings.instance.trendType) ?: return null
-        return Images.downloadImage(url)
-    }
-
-    private fun createImageView(url: URL): JComponent {
-        val settings = Settings.instance
-        val image = ImageUtil.scaleImage(ImageIcon(url).image, settings.trendPopupWidth, settings.trendPopupHeight)
-        val label = JLabel("", ImageIcon(image), JLabel.CENTER)
-        label.setSize(settings.trendPopupWidth, settings.trendPopupHeight)
-        return label
-    }
-
-    private fun showPopup(url: URL, target: Component) {
-        val view = createImageView(url)
+    private fun showPopup(image: JComponent, target: Component) {
         val builder = JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(view, null)
+            .createComponentPopupBuilder(image, null)
         val popup = builder.createPopup()
 
         val settings = Settings.instance
