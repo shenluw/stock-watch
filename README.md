@@ -25,7 +25,7 @@
 
 ![状态栏](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg)
 ![趋势图](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/trendchart.jpg)
-![搜索](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/search.jpg)
+![搜索](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/search.png)
 
 ## 显示格式化参数
 例如：
