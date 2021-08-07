@@ -15,18 +15,17 @@
 
 # 安装
 
-<iframe frameborder="none" width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/14025"></iframe>
-
 - **使用 IDE 内置插件系统安装:**
   - <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>搜索并找到<b>"
     stock-watch"</b></kbd> > <kbd>Install</kbd>
 
 # 运行结果
 
-![setting view](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/settingview.jpg)
+![设置](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/settingview.jpg)
 
-![status bar](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg)
+![状态栏](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg)
 ![趋势图](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/trendchart.jpg)
+![搜索](https://raw.githubusercontent.com/shenluw/stock-watch/master/img/search.jpg)
 
 ## 显示格式化参数
 例如：
