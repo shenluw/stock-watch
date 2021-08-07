@@ -131,6 +131,9 @@ class SearchStockDialog(private val project: Project) : SearchStockDialogUI(proj
      * 添加到配置中
      */
     private fun addSettingSymbol() {
+        val summary = resultList.selectedValue ?: return
+        Settings.instance.symbols.add(summary)
+        QuotesService.instance.updateSubscribe()
     }
 
 

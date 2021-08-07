@@ -58,7 +58,6 @@ abstract class AbstractPollClient<T : DataSourceSetting> : DataSourceClient<T> {
         }
         this.symbols = symbols.toList()
 
-        close()
         startPoll()
     }
 

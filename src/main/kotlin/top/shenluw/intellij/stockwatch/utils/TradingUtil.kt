@@ -1,5 +1,6 @@
 package top.shenluw.intellij.stockwatch.utils
 
+import top.shenluw.intellij.stockwatch.StockSummary
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -69,13 +70,14 @@ object TradingUtil {
         return symbol.isBlank() || symbol[0] == '#'
     }
 
-    fun filterSymbols(symbols: Set<String>): MutableSet<String> {
-        return symbols.filter { !isIgnoreSymbol(it) }
-                .flatMap { it.split(",") }
-                .filter { it.isNotBlank() }
-                .map { it.trim() }
-                .filter { !isIgnoreSymbol(it) }
-                .toHashSet()
+    fun filterSymbols(symbols: Set<StockSummary>): MutableSet<String> {
+        return symbols.map { it.symbol }
+            .filter { !isIgnoreSymbol(it) }
+            .flatMap { it.split(",") }
+            .filter { it.isNotBlank() }
+            .map { it.trim() }
+            .filter { !isIgnoreSymbol(it) }
+            .toHashSet()
     }
 
 }

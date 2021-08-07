@@ -78,11 +78,7 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
 
                 testConnectBtn.isEnabled = false
 
-                client.testConfig(
-                    setting,
-                    TradingUtil.filterSymbols(transform(symbolTextArea.text)
-                        .filter { !TradingUtil.isIgnoreSymbol(it) }
-                        .toSet()))
+                client.testConfig(setting, TradingUtil.filterSymbols(transform(symbolTextArea.text)))
                     .onSuccess {
                         UIUtil.invokeAndWaitIfNeeded(Runnable {
                             testConnectBtn.isEnabled = true
@@ -188,11 +184,15 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         tigerIdTextField.text = sourceSetting?.tigerId
         privateKeyTextArea.text = sourceSetting?.privateKey
         val sb = StringBuilder()
-        val symbols: Set<String> = settings.symbols
+        val symbols: Set<StockSummary> = settings.symbols
         if (!symbols.isNullOrEmpty()) {
-            val iterator: Iterator<String?> = symbols.iterator()
+            val iterator: Iterator<StockSummary> = symbols.iterator()
             while (iterator.hasNext()) {
-                sb.append(iterator.next())
+                val summary = iterator.next()
+                sb.append(summary.symbol)
+                if (summary.name.isNotBlank()) {
+                    sb.append('@').append(summary.name)
+                }
                 if (iterator.hasNext()) {
                     sb.append("\n")
                 }
@@ -425,8 +425,8 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
         }
     }
 
-    private fun transform(text: String?): MutableSet<String> {
-        val set = linkedSetOf<String>()
+    private fun transform(text: String?): MutableSet<StockSummary> {
+        val set = linkedSetOf<StockSummary>()
         if (text.isNullOrBlank()) {
             return set
         }
@@ -434,8 +434,13 @@ class SettingView : SettingUI(), ConfigurableUi<Settings>, KLogger {
             BufferedReader(StringReader(text)).use { reader ->
                 var line: String
                 while (reader.readLine().also { line = it.trim() } != null) {
-                    if (!line.isBlank()) {
-                        set.add(line)
+                    if (line.isNotBlank()) {
+                        val data = line.split('@')
+                        if (data.size == 2) {
+                            set.add(StockSummary(data[0], data[1]))
+                        } else {
+                            set.add(StockSummary(data[0], ""))
+                        }
                     }
                 }
             }
