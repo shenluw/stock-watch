@@ -43,7 +43,7 @@ class QuotesServiceImpl : QuotesService, Disposable {
                 dataSourceClient?.close()
             }
             dataSourceClient = createDataSourceClient(src)
-            dataSourceClient?.start(src, symbols)
+            dataSourceClient?.start(symbols)
         } catch (e: Exception) {
             notifyMsg("start error", e.message ?: "", NotificationType.ERROR)
         }
@@ -93,13 +93,13 @@ class QuotesServiceImpl : QuotesService, Disposable {
             return null
         }
         if (dataSourceSetting is TigerDataSourceSetting) {
-            return TigerClient().castSafelyTo()
+            return TigerClient().also { it.create(dataSourceSetting) }.castSafelyTo()
         }
         if (dataSourceSetting is TigerPollDataSourceSetting) {
-            return TigerPollClient().castSafelyTo()
+            return TigerPollClient().also { it.create(dataSourceSetting) }.castSafelyTo()
         }
         if (dataSourceSetting is ScriptPollDataSourceSetting) {
-            return ScriptPollClient().castSafelyTo()
+            return ScriptPollClient().also { it.create(dataSourceSetting) }.castSafelyTo()
         }
         return null
     }

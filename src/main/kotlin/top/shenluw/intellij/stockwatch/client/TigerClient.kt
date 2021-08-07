@@ -31,15 +31,18 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
     private var cache = concurrentMapOf<String, StockInfo>()
 
     @Synchronized
-    override fun start(dataSourceSetting: TigerDataSourceSetting, symbols: MutableSet<String>) {
+    override fun create(dataSourceSetting: TigerDataSourceSetting) {
         if (!dataSourceSetting.isValid()) {
             throw ClientException("setting error")
         }
+        this.dataSourceSetting = dataSourceSetting
+    }
 
+    @Synchronized
+    override fun start(symbols: MutableSet<String>) {
+        val dataSourceSetting = this.dataSourceSetting ?: throw ClientException("not created")
         val origin = this.symbols
         this.symbols = symbols
-
-        this.dataSourceSetting = dataSourceSetting
 
         updateSymbolNames(dataSourceSetting)
 
@@ -162,8 +165,7 @@ class TigerClient : ITigerClient<TigerDataSourceSetting>, ApiComposeCallback, KL
         val price = jsonObject.getDouble("latestPrice")
         val info = StockInfo(
             name, symbol,
-            jsonObject.getDouble("open")
-            , preClose, price,
+            jsonObject.getDouble("open"), preClose, price,
             jsonObject.getDouble("high"),
             jsonObject.getDouble("low"),
             jsonObject.getLong("volume"),

@@ -9,7 +9,9 @@ import java.net.URL
  */
 interface DataSourceClient<T : DataSourceSetting> {
 
-    fun start(dataSourceSetting: T, symbols: MutableSet<String>)
+    fun create(dataSourceSetting: T)
+
+    fun start(symbols: MutableSet<String>)
 
     fun update(symbols: MutableSet<String>)
 

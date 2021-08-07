@@ -131,14 +131,16 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         return emptyList()
     }
 
-    override fun start(dataSourceSetting: ScriptPollDataSourceSetting, symbols: MutableSet<String>) {
+    @Synchronized
+    override fun create(dataSourceSetting: ScriptPollDataSourceSetting) {
         if (!dataSourceSetting.isValid()) {
             throw ClientException("setting error")
         }
+        if (httpClient != null) {
+            return
+        }
 
         interval = dataSourceSetting.interval
-
-        this.symbols = symbols.toList()
 
         scriptEngines.clear()
 
@@ -155,6 +157,13 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
         }
 
         httpClient = HttpClients.createSystem()
+    }
+
+    override fun start(symbols: MutableSet<String>) {
+        if (httpClient == null) {
+            throw ClientException("not created")
+        }
+        this.symbols = symbols.toList()
         startPoll()
     }
 
@@ -248,8 +257,8 @@ class ScriptPollClient : AbstractPollClient<ScriptPollDataSourceSetting>(), KLog
                     return@map it.castSafelyTo<JSONObject>()
                         ?.let { obj ->
                             StockSummary(
-                                obj.getString("name"),
-                                obj.getString("symbol")
+                                obj.getString("symbol"),
+                                obj.getString("name")
                             )
                         }
                 }.filterNotNull()

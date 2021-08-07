@@ -58,18 +58,23 @@ class TigerPollClient : AbstractPollClient<TigerPollDataSourceSetting>(), ITiger
         }
     }
 
-    override fun start(dataSourceSetting: TigerPollDataSourceSetting, symbols: MutableSet<String>) {
+    override fun create(dataSourceSetting: TigerPollDataSourceSetting) {
         if (!dataSourceSetting.isValid()) {
             throw ClientException("setting error")
         }
-
         interval = dataSourceSetting.interval
 
-        this.symbols = symbols.toList()
         updateSymbolNames(dataSourceSetting)
 
         tigerApiClient = createApiClient(dataSourceSetting)
 
+    }
+
+    override fun start(symbols: MutableSet<String>) {
+        if (tigerApiClient == null) {
+            throw ClientException("not created")
+        }
+        this.symbols = symbols.toList()
         startPoll()
     }
 
