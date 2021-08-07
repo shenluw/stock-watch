@@ -13,6 +13,7 @@
         <ul>
         <li>Symbol: <strong>#</strong> begins to indicate that this line does not take effect</li>
         <li><strong>ALT + Z</strong>  Quick toggle</li>
+        <li><strong>ALT + S</strong>  Quick Search</li>
         <li>Support script</li>
         <li>Support for custom displays</li>
         </ul>
@@ -27,6 +28,7 @@
       <ul>
         <li>Support new version of IDE.</li>
         <li>Adjust the settings UI.</li>
+        <li>Features Stock search function</li>
       </ul>
     ]]></change-notes>
 

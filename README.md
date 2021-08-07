@@ -7,10 +7,19 @@
 - 可以在底部status bar查看股票行情数据
 - 股票代码 **#** 开头表示这一行不生效
 - **ALT + Z**  功能开关快捷键
+- **ALT + S**  打开股票搜索框快捷键
 - 可以使用自定义脚本拉取数据
 - 一行可以填写多个股票代码，使用 **,** 分割
 - 添加趋势图预览
+- 添加股票搜索功能
 
+# 安装
+
+<iframe frameborder="none" width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/14025"></iframe>
+
+- **使用 IDE 内置插件系统安装:**
+  - <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>搜索并找到<b>"
+    stock-watch"</b></kbd> > <kbd>Install</kbd>
 
 # 运行结果
 
@@ -94,13 +103,33 @@ function parse(text, symbols) {
 // 点击状态栏时调用
 // 可以显示返回链接所展示的图片
 function trendChart(symbol, type) {
-    console.info("sys" + symbol)
-    return "http://xxxx.xxx/xxx.png"
+  console.info("sys" + symbol)
+  return "http://xxxx.xxx/xxx.png"
 }
 
 
 // 配置更新时调用
 function reset() {
-    console.info("reset")
+  console.info("reset")
 }
+
+// 搜索查询url
+function searchUrl(keyword) {
+  return "http://xxxx.xxx" + keyword
+}
+
+// 搜索结果解析
+// text 解析返回值
+// 返回股票数据json字符串
+function searchParse(text) {
+  // do some thing
+  var infos = [
+    {
+      name: "股票名称",
+      symbol: "股票代码",
+    }
+  ]
+  return JSON.stringify(infos)
+}
+
 ~~~
