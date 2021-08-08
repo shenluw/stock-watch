@@ -1,36 +1,6 @@
 <idea-plugin require-restart="false">
     <id>top.shenluw.intellij.stock-watch</id>
-    <name>stock-watch</name>
     <vendor email="shenluw@gmail.com" url="https://shenluw.top">Shenluw</vendor>
-    <idea-version since-build="211"/>
-
-    <description><![CDATA[
-        <p>
-            <a href='https://996.icu'><img src="https://img.shields.io/badge/link-996.icu-red.svg" referrerpolicy="no-referrer" alt="996.icu"></a>
-            <a href='https://github.com/996icu/996.ICU/blob/master/LICENSE'><img src="https://img.shields.io/badge/license-Anti%20996-blue.svg" referrerpolicy="no-referrer" alt="LICENSE"></a>
-        </p>
-        Use the status bar to view stock quotes
-        <ul>
-        <li>Symbol: <strong>#</strong> begins to indicate that this line does not take effect</li>
-        <li><strong>ALT + Z</strong>  Quick toggle</li>
-        <li><strong>ALT + S</strong>  Quick Search</li>
-        <li>Support script</li>
-        <li>Support for custom displays</li>
-        </ul>
-        <p>&nbsp;</p>
-        <h1>Preview</h1>
-        <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/settingview.jpg" alt="setting view"></p>
-        <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/statusbar.jpg" alt="status bar"></p>
-        <p><img src="https://raw.githubusercontent.com/shenluw/stock-watch/master/img/trendchart.jpg" alt="trend chart"></p>
-    ]]></description>
-
-    <change-notes><![CDATA[
-      <ul>
-        <li>Support new version of IDE.</li>
-        <li>Adjust the settings UI.</li>
-        <li>Features Stock search function</li>
-      </ul>
-    ]]></change-notes>
 
     <depends>com.intellij.modules.lang</depends>
 
