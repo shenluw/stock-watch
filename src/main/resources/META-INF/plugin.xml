@@ -1,5 +1,6 @@
 <idea-plugin require-restart="false">
     <id>top.shenluw.intellij.stock-watch</id>
+    <name>stock-watch</name>
     <vendor email="shenluw@gmail.com" url="https://shenluw.top">Shenluw</vendor>
 
     <depends>com.intellij.modules.lang</depends>
